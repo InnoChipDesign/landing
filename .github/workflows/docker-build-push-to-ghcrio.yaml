@@ -28,18 +28,9 @@ jobs:
       - name: Set Docker tag
         id: date
         run: echo "DATE_STAMP=$(date +%s)" > "$GITHUB_ENV"
-
-      - name: Check env vars
-        run: echo "$GITHUB_REPOSITORY"
-        
-      - name: Update env vars
-        run: echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
-
-      - name: Check updated env vars
-        run: echo "$GITHUB_REPOSITORY"
         
       - name: Build and push Docker images
-        uses: iloveitaly/github-action-nixpacks@v1.0
+        uses: unaimillan/github-action-nixpacks@v0.2.0
         with:
           push: true
           # labels: | # Already exist inside action (not documented)
