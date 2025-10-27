@@ -1,0 +1,12 @@
+# [phases.setup]
+# aptPkgs = ['...', 'python3', 'python3-pip', 'g++']
+
+# [phases.install]
+# ...
+
+# [phases.build]
+# ...
+
+[variables]
+NIXPACKS_NODE_VERSION = '22'
+NIX_CONFIG = "extra-substituters = https://nix-community.cachix.org\nextra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
