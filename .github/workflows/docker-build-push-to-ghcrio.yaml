@@ -30,7 +30,7 @@ jobs:
         run: echo "DATE_STAMP=$(date +%s)" > "$GITHUB_ENV"
         
       - name: Build and push Docker images
-        uses: unaimillan/github-action-nixpacks@v0.2.0
+        uses: unaimillan/github-action-nixpacks@v0.2.1
         with:
           push: true
           # labels: | # Already exist inside action (not documented)
