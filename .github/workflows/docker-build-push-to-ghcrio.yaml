@@ -32,8 +32,8 @@ jobs:
         uses: iloveitaly/github-action-nixpacks@v1.0
         with:
           push: true
-          labels:
-            - org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          # labels: | # Already exist inside action (not documented)
+          #   org.opencontainers.image.source=https://github.com/${{ github.repository }}
           tags: |
             ${{ env.IMAGE_NAME }}:custom-${{ env.DATE_STAMP }}
             ${{ env.IMAGE_NAME }}:latest
