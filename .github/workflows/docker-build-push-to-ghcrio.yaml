@@ -33,7 +33,7 @@ jobs:
         run: echo "$GITHUB_REPOSITORY"
         
       - name: Update env vars
-        run: echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY,,}" > "$GITHUB_ENV"
+        run: echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
       - name: Check updated env vars
         run: echo "$GITHUB_REPOSITORY"
