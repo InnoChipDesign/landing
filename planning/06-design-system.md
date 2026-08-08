@@ -111,25 +111,69 @@ stops at 3).
 
 ## 4. Component inventory
 
-Each is a small Astro component unless marked React.
+Each is a small Astro component unless marked as an island.
 
-**UI primitives** — `Button` (primary / secondary / ghost / external), `Card`, `Badge`, `Chip`
-(filterable tag, with colour from `tags.yaml`), `StatusPill`, `Prose`, `Section`, `Container`,
-`Heading`, `Divider`, `Icon`, `ExternalLink`, `Callout`, `Stat`, `EmptyState`, `Skeleton`.
+**UI primitives (~16)** — `Button` (primary / secondary / ghost / external), `Card`, `Badge`, `Chip`
+(tag, with colour from `tags.yaml`), `StatusPill`, `Prose`, `Section`, `Container`, `Heading`,
+`Divider`, `Icon`, `ExternalLink`, `Callout`, `Stat`, `EmptyState`, `Skeleton`.
 
-**Layout** — `Header`, `Nav`, `MobileNav` (inline script), `Footer`, `ThemeToggle`, `Breadcrumbs`,
-`SkipLink`.
+**Layout** — `Header`, `Nav`, `MobileNav` (inline script, no framework), `Footer`, `ThemeToggle`,
+`Breadcrumbs`, `SkipLink`.
 
-**Domain** — `ProjectCard`, `ProjectHeader`, `ProjectMeta`, `TeamCredits`, `LinksBox`, `TechBox`,
-`AwardsBox`, `RelatedProjects`, `PersonChip`, `PersonGrid`, `AlumniList`, `EventRow`, `ServiceCard`,
-`ResourceGroup`, `FeaturedProjects`, `StatsBand`, `JoinCTA`.
+**Portal (D19)** — `PortalGrid`, `PortalCard`. Used only by `/`; deliberately separate from `Card`
+so the portal's look can diverge without dragging the club site with it.
 
-**Media** — `Figure`, `Gallery`, `VideoEmbed`.
+**Domain** — `ProjectRow` (**the directory's unit — D20**), `ProjectCard` (homepage featured strip
+only), `ProjectCover` (cover-or-stub, **every** thumbnail goes through it — D21), `ProjectHeader`,
+`ProjectMeta`, `TeamCredits`, `LinksBox`, `TechBox`, `AwardsBox`, `RelatedProjects`, `PersonLine`,
+`LeadershipBlock`, `EventRow`, `ServiceCard`, `ResourceGroup`, `FeaturedProjects`, `StatsBand`,
+`JoinCTA`, `FacetBar`, `MeetingLine`, `EquipmentRow` (D31 — a thin variant of `ProjectRow`, linked
+only when the item has a `link`), `PartnerCard` + `PartnerInvite` (D32).
 
-**Islands (React)** — `ProjectExplorer`, `Lightbox`.
+**Media** — `Figure`, `Gallery`, `VideoFacade` (poster + inline click handler — D10/E2).
 
-That is ~35 components. Building the ~15 UI primitives first, in isolation, is the single biggest
-determinant of whether the rest goes quickly.
+**Islands (Preact)** — `ProjectExplorer`, `Lightbox`. Two, and only two (D11).
+
+That is ~40 components. Building the ~16 UI primitives first, in isolation on `/styleguide`, is the
+single biggest determinant of whether the rest goes quickly.
+
+### Components removed from the earlier inventory
+
+| Removed | Why |
+|---|---|
+| `PersonChip`, `PersonGrid`, `AlumniList` | No `?team=` facet (D7) and no full roster (D8). Replaced by `PersonLine` + `LeadershipBlock`. |
+| `VideoEmbed` | Replaced by `VideoFacade` — click-to-load (D10). |
+| Pagination controls | No pagination (D22). |
+
+### Two components that carry the design
+
+**`ProjectRow`** is the one the site is judged on — it appears ~20 times on the busiest page.
+
+```
+┌────────────┐  Title, --font-display, 1.375rem, links the whole row
+│            │  Summary, --color-muted, 2 lines, line-clamp
+│  4:3       │  ● Tag  ● Tag  ● Tag        2024 · Fall · ● Completed      ▶︎
+│  cover     │
+└────────────┘
+   180px         ← at lg; 128px at md; full-width stacked below md
+```
+
+Rules: whole row is one `<a>`; chips inside are `<span>`, never links; hover raises the row's
+background one surface step (no translate — rows shifting on hover in a long list is nauseating);
+focus ring wraps the entire row, not the title.
+
+**`ProjectCover`** renders the real cover or the deterministic SVG stub (`04-media.md` §A2). Nothing
+else in the codebase may render a project **or equipment** thumbnail directly — that is how "some rows
+have images and some have holes" gets shipped. `/club/equipment` reuses it for exactly this reason,
+which is also why that page needed no new fallback logic.
+
+### Tag colours
+
+`tags.yaml` carries a `color` key per tag (`02-content-model.md` §3). Those names map to a fixed
+token set — `--color-tag-blue`, `--color-tag-violet`, … — each defined for light **and** dark. They
+are chip backgrounds at low chroma, never text colours, so no tag chip can fail contrast. An unknown
+colour name falls back to `--color-surface-2` rather than throwing: a mistyped colour should not
+break a build that a mistyped *tag* already catches.
 
 ## 5. Interaction & motion
 
@@ -164,7 +208,22 @@ Non-negotiable, checked before each release:
   32×32 fallback, `apple-touch-icon.png` 180×180, and `site.webmanifest` with 192/512 PNGs and the
   theme colour. Generated from one source SVG logo.
 
-## 8. What "AstroWind base" means concretely
+> 🔴 **Logo blocker.** The leader will supply a **JPG**. A JPG cannot produce `favicon.svg`, and
+> produces an opaque white box for the touch icon and the OG template. Request an **SVG, or a PNG
+> with transparency at ≥ 512×512**. If only a JPG exists, phase 1 rebuilds it once as
+> `src/assets/logo.svg` and that becomes the source for the entire icon set, the header wordmark, the
+> portal cards, the cover stub and the OG images. See `11-club-data.md` §1.
+
+## 8. Two zones, one system
+
+The portal (`/`) and the club site (`/club/*`) share `BaseLayout`, every token, both fonts and the
+theme script. They differ only in chrome: the portal has no nav and no footer columns.
+
+Keeping them on one token set is deliberate — a visitor arriving at `/club` from a link, then finding
+`/` via the footer, should not feel they have crossed into a different organisation. What
+distinguishes the portal is **density**, not palette: three large cards, short page, no navigation.
+
+## 9. What "AstroWind base" means concretely
 
 Taken from AstroWind: the head/SEO component structure, the `Layout`/`Container` primitives, the
 widget composition pattern, and the dark-mode toggle approach.

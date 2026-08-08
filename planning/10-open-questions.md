@@ -1,315 +1,164 @@
 # Open Questions
 
-Everything in sections A–C is a **fact only you can supply** — none of it is a design decision I can
-make. The architecture is complete without these answers; the site cannot launch without them.
+Answered 2026-08-07. This file is now a **record of what was decided and what is still missing** —
+it is no longer a form.
 
-**How to use this file:** type your answers directly into the `> ` blocks under each question, then
-tell me it's updated. Leave `—` where you don't know yet or want me to choose. Change `[ ]` to `[x]`
-on a section when it's fully answered.
+Where an answer produced a fact, that fact lives in **`11-club-data.md`**, not here.
+Where an answer produced a decision, it lives in **`00-decisions.md`**, not here.
 
-Status legend: `[ ]` unanswered · `[~]` partially answered · `[x]` done
-
----
-
-## A. Blocks Phase 1 (foundations) — needed first
-
-### A1. Club identity
-
-**Full official name:**
-> InnoChipDesign (full: Innopolis Chip Design Club)
-
-**One-sentence pitch:**
-> Innopolis Chip Design club is a student, scientific and engineering community at Innopolis University that aims to learn and practice the art of hardware desing
-
-OR
-
-> Innopolis Community dedicated to the FPGA and ASIC + RISC-V
-
-**University**:
-> Innopolis University, Innopolis city, Tatarstan Republic, Russia
-
-**Founding year:**
-> 2023
-
-**Logo:**
-> JPG image will be supplied before the implementation stage
+Status: `[x]` answered and propagated · `🔴` still blocking something · `🟡` I drafted something for
+your approval
 
 ---
 
-### A2. Domain
+## Part 1 — Still blocking
 
-**Final public URL** (base domain):
-> innochipdesign.campus.innopolis.university
+Six items. **None of them block phases 0–4** (foundations, content model, project pages, directory) —
+that is more than half the build. Ordered by when they're needed.
 
-AND
+| # | Needed | Blocks | Latest |
+|---|---|---|---|
+| 1 | 🔴 **Logo as SVG, or PNG with transparency ≥ 512×512.** A JPG cannot make `favicon.svg` and gives an opaque white box in the OG template. | favicon set, OG images, header wordmark, portal cards | phase 1 |
+| 2 | 🔴 **One real sentence describing VCD, and one for HW.** Currently guessed. On the portal they are the only words a visitor reads before clicking. | `/`, header, `/club/resources` | phase 5 |
+| 3 | 🔴 **The equipment list itself** — name, one line, link, photo, per item (the new page, D31). | `/club/equipment` | phase 5 |
+| 4 | 🟡 **Approve or rewrite the drafted mission copy** (`05` §12) and the `/club/join` framing (`05` §9). | `/club/about`, `/club/join` | phase 5 |
+| 5 | 🔴 **Canonical domain** — `www.innochipdesign.ru` or the campus host (D30). `SITE_URL` bakes one into every canonical, sitemap entry and OG URL. | production build | phase 7 |
+| 6 | 🔴 **2024 SoC Design Challenge: which track, which placement, which team members.** Until then `/club/about` says "placed in 2024" and the structured `awards` stay empty. | `/club/about` | phase 8 |
 
-> www.innochipdesign.ru
+Two smaller things worth a decision at some point, neither blocking:
 
-**Is it a subpath** (e.g. `university.edu/club`)? Yes/No — this changes Astro's `base` config and
-every asset URL, so it must be decided before Phase 1.
-> Yes, it's subpath /club
-
-**Placeholder to build against until the real domain exists** (optional):
-> -
-
-> ⚠️ This value is baked in at build time (`08-deployment.md` §2). A wrong value silently breaks link
-> previews and the sitemap.
-
----
-
-### `[ ]` A3. The two header services (D16)
-
-1) Service 1 ("VCD") redirects to vcd.innochipdesign.ru
-2) Service 2 ("HW")  redirects to homework.innochipdesign.ru
-
-No any other info needed.
-
-**Any other club-built services** for the `/resources` section? (name · URL · one line · status)
-> Contact details:
-> Club chat:
-> https://t.me/InnoChipDesign
-> Leader email:
-> m.kuskov@innopolis.university
-> 
-> Student FPGA projects:
-> General list https://github.com/orgs/InnoChipDesign/repositories?q=project-
-> 
-> Examples:
-> https://github.com/InnoChipDesign/project-schoolRISCV
-> https://github.com/InnoChipDesign/project-Game2048_FPGA
-> https://github.com/InnoChipDesign/RiverRaidFPGA
-> https://github.com/InnoChipDesign/project-DCD_MultiBankMemory
+- **`m.kuskov@innopolis.university` is a person's address, not a role address.** It will outlive
+  neither the person nor the role. A `club@…` alias or a shared inbox is worth requesting.
+- **The three seed events I generated are invented templates**, shipped `draft: true` so they cannot
+  reach production (`05` §7). Replace or delete them.
 
 ---
 
-## B. Blocks Phase 2 (content model)
+## Part 2 — What your answers changed
 
-### B1. Tag vocabulary
+Twelve decisions were revised or added. Full text in `00-decisions.md`; this is the map from your
+answer to the change.
 
-The list in `02-content-model.md` §3 is a placeholder. What are your club's actual focus areas?
-Aim for **5–12**. Worth ten minutes of thought — it's the primary way visitors navigate, and changing
-it later means editing every project.
+| Your answer | Decision | Effect |
+|---|---|---|
+| "Make root page `/` a portal with links… to the /club itself (main link), to the VCD, to the HW" | **D15, D19** | Portal at `/`, club at `/club/*`, **one build, no Astro `base`**. Every route moved. `src/lib/routes.ts` added so the prefix exists in one file. The club card is visually primary; VCD and HW are secondary. |
+| "Add additional page with Equipment… no subpages… name, short description, ref link, photo (or stub)" | **D31** | New route `/club/equipment` + an `equipment.yaml` data collection. Equipment is **removed** from `/club/resources` so it isn't in two places. |
+| "no need. There is no uniform teams." | **D7, D8** | Team facet **removed** — three facets, not four. No `?team=` parameter. Names stay searchable as free text. `PersonChip`/`PersonGrid`/`AlumniList` deleted from the inventory. |
+| "Switch to preact, okay" | **D11** | `@astrojs/preact` with `compat: true`. `/club/projects` JS budget cut from < 80 KB to < 30 KB; project pages from < 55 KB to < 12 KB. No component rewrites. |
+| "switch to clickable preview" | **D10** | Click-to-load `VideoFacade` replaces the direct iframe. **Zero third-party requests on any route until a click** — a property worth defending, and the reason no cookie banner is needed. |
+| "projects without photos should use stub (default) image" | **D21** | `cover` now optional; `ProjectCover` renders a deterministic SVG stub. `coverAlt` still required *when* a cover exists. The same stub serves the equipment page. |
+| "page size is huge, 100 projects per page" | **D22** | Taken to its conclusion: **no pagination at all**. At ~20 projects growing ~8/year, page 2 arrives around 2036. `/club/projects/page/[n]` and `?page=` dropped. |
+| "photo on left, details in center and right… No grid." | **D20** | `/club/projects` is a **row list**. Card grid survives only as the 3-item featured strip on `/club`. The equipment page reuses the same row. |
+| "Draft, Idea, Work in progress, Completed" | **D23** | `status: idea \| in-progress \| completed \| archived`, with `draft: true` kept as a **separate** publication flag. `archived` added so a finished 2023 project can stay online without cluttering the default view. |
+| "Advanced students trimesters including summer" | **D24** | `semester: spring \| fall \| summer`, optional. |
+| "nobody" *(will keep the meeting banner current)* | **D26** | Dated banner dropped. A standing sentence ships instead — "every Saturday at 12:00 during the spring and fall semesters, room announced in the chat" — true for years with no maintenance. |
+| "image should be clickable redirect to ya maps" | **D27** | Static map image, clickable → Yandex Maps. ⚠️ This **contradicts** your C3 answer asking for a live embed; I went with the later, more specific one, which also preserves the zero-third-party property. Overrule if you meant the embed — it's a one-component change plus a CSP entry. |
+| "Everything except name should be optional" | **D8** | `name` is the only required field on a person. A valid entry can be two lines. |
+| "Generate minimal set automatically" *(tags)* | **D25** | 11 tags seeded from your actual GitHub repos: fpga, asic, riscv, cpu, memory, peripherals, dsp, vision, verification, games, tools. Each with a "belongs here when…" rule so the next maintainer can extend it (`02` §3). |
+| "Partner ADV-T LLC (adv-t.ru)" + "~Your company could be here~" | **D32** | Partners section on `/club/about` with one real entry, plus a dashed-outline "Your company could be here" card linking to the club email. Treated as deliberate, not a joke — see below. |
 
-> Generate minimal set automatically based on description. Will be filled and updated later.
+### The two you asked me to clarify
 
-### B2. Project volume
+**D-g — "Lightbox state not in the URL": what was I asking?** Whether opening image 3 of a gallery
+should change the address bar to `…?image=3`, so the link could be shared and Back would close the
+lightbox. **Decided: no** (D28). Back-closes-overlay is a mobile-app convention browsers don't
+guarantee — on desktop it navigates away and loses the page; every gallery click would add a history
+entry, so leaving a project takes eight Backs; and a shared `?image=3` breaks the moment the gallery
+is reordered. The shareable URL for a specific image is the "View original" link, which points at a
+real file.
 
-**How many projects exist to publish now?**
-> Around 20, but will be growing
+**D-k — "CSP report-only for one week": what is that?** A Content Security Policy is a response header
+listing which origins a page may load scripts, styles, images and iframes from; the browser blocks
+anything not listed. It is the main defence against an injected script on a site that embeds
+third-party video. In **report-only** mode the browser *reports* violations instead of blocking them.
+**Decided: report-only for one week, then enforce** (D29). Enforced on day one, one missed hash
+silently breaks the theme toggle or blanks every video, with a console error most visitors never
+report. A week of reports costs nothing and turns a possible outage into a log line. It's step 10 of
+the release checklist.
 
-**Roughly how many per year going forward?**
-> 8
+### On "Your company could be here"
 
-> Under ~20 total, some of the pagination and facet-count machinery is over-engineering and I'd
-> simplify it. Over ~100, we should revisit the grid layout.
+Taken at face value and specced as a real element (D32): a dashed-outline card at the end of the
+partners row, `mailto:`-linked to the club address, with a line like *"We work with companies on
+student hardware projects. Talk to us."*
 
-Due to static nature, paging is not necessary.
+Two honest cautions, since this is outward-facing:
 
----
+- **It only reads as confident when it sits beside at least one real partner.** One real card plus
+  one empty invitation is fine. An empty invitation alone reads as "nobody sponsors us".
+- **The strikethrough in your answer stays out of the rendered page.** `~text~` is a joke in a
+  markdown file; on a live site it reads as a mistake.
 
-### `[ ]` B3. Semesters
-
-Does your institution use spring/fall, or something else (trimesters, numbered semesters)?
-The `semester` enum is currently `spring | fall`.
-> The basic track has sprint and fall semesters. Advanced students trimesters including `summer`.
-
----
-
-### B4. People and consent ⚠️
-
-This is a public page listing real students by name and photo.
-
-**Who goes on the roster** — all members, or only project participants and officers?
-> need to be clarified, question is unclear
-
-**How will consent be recorded** for each person's name, photo and links?
-> by hand in person
-
-**Process when someone asks to be removed:**
-> up to the instructor, university staff and maintainer to update the code.
-
-**Does your university have a rule about publishing student names or photos?** 
-> legal sites are solved by me with my sole responsibility, do not bother
-
-> `photo` and `links` are optional in the schema for exactly this reason, but the policy is yours.
-
-Photo and links should be optional. Everything except name should be optional.
-
----
-
-### B5. Video provider
-
-**Which single provider are all videos on?** (YouTube / Rutube / VK Video / Dzen / other)
-Determines the CSP `frame-src` and which parser gets exercised first.
->
-
-**Do demo videos already exist, or is that still to do?**
-> already exist.
+If you'd rather not have it, it's a one-component deletion — say so and it goes.
 
 ---
 
-## C. Blocks Phase 5 (pages) and Phase 8 (launch)
+## Part 3 — Answers recorded, with where they went
 
-### C1. Meeting logistics
+`[x]` = fact extracted and propagated. Nothing below needs re-answering.
 
-Appears on the homepage CTA, `/join` and `/events`.
+| Question | Your answer | Now lives in |
+|---|---|---|
+| A1 identity | InnoChipDesign / Innopolis Chip Design Club, Innopolis University, founded 2023 | `11` §1 |
+| A1 pitch | two variants supplied | `11` §1 — first is the hero, second the footer strapline |
+| A1 logo | JPG supplied later | `11` §1 🔴 blocker 1 |
+| A2 domain | two domains + subpath `/club` | `11` §2, D30 |
+| A3 services | `vcd.innochipdesign.ru`, `homework.innochipdesign.ru` | `11` §3, `02` §6 |
+| A3 other | Telegram, email, GitHub project list | `11` §4, §7; `02` §7 |
+| B1 tags | "generate minimal set" | `02` §3 — 11 tags |
+| B2 volume | ~20 now, ~8/year | D22, `03` §5 |
+| B3 semesters | spring/fall + summer for trimesters | D24 |
+| B4 people | consent in person; removal via maintainer; only `name` required | D8, `02` §5, `11` §9 |
+| B5 video host | *(blank → clarified as "mixed")* | D10 — all four providers first-class |
+| C1 meetings | Saturdays 12:00, spring & fall, location TBA each time | D26, `11` §5 |
+| C2 join | YADRO Chip Design School form + Telegram; everyone welcome | `11` §5, `05` §9 ⚠️ third-party form |
+| C3 contact | address, advisor Mikhail Kuskov, map | `11` §4, D27 |
+| C4 events | "nobody" keeps the banner; generate 3 examples | D26, `05` §7 (all `draft: true`) |
+| C5 resources | *(equipment now has its own page — D31)* | `02` §8, `05` §9 🔴 blocker 3 |
+| C6 about | "generate based on websearch"; SoC Design Challenge 2023–26, prizes 2024 | `05` §12 🟡, `11` §6 🔴 blocker 6 |
+| C6 partners | ADV-T LLC (adv-t.ru) + open invitation | D32, `11` §6 |
+| F | portal at `/`; new equipment page | D19, D31 |
 
-**Day / time:**
-> Every saturday during spring and fall semester, 12 o'clock, 
+### What the research turned up
 
-**Room / building:**
-> location TBA each time 
+Five things worth knowing that weren't in your answers:
 
----
-
-### `[ ]` C2. Join flow (D18)
-
-**Application form URL** (Google Forms / Yandex Forms / other):
-> https://engineer.yadro.com/chip-design-school/#applicationForm
-
-**Chat platform and invite link** (Telegram / Discord / other):
-> t.me/innochipdesign
-
-**Is there a selection process, or is everyone welcome?** This changes the tone of `/join`
-substantially — say which you want.
-> everyone is welcome
-
----
-
-### C3. Contact
-
-**Public email address:**
-> provided
-
-**Social accounts to link:**
-> provided
-
-**Physical location** for `/contact`:
-> Universitetskaya Street, 1, Innopolis, Verkhneuslonsky District, Republic of Tatarstan, 420500
-
-**Want a static map image?** (Yes/No — an embedded map would be a third-party tracker, see D-i)
-> yes, embed yandex map dynamic map with location shown as a red dot
-
-**Faculty advisor** — name, and should they be listed?
-> Mikhail Kuskov, Senior Instructor
-
----
-
-### C4. Events
-
-**Past events worth listing** (date · kind · title · photos yes/no):
-```
-To be filled, generate 3 examples on your own.
-```
-
-**Who will keep the "next meeting" banner current?**
-> nobody
-
-> If the honest answer is "nobody", say so — I'll drop the banner rather than ship something that
-> goes stale and makes the site look abandoned.
+1. **The application form isn't yours.** `engineer.yadro.com/chip-design-school/` is YADRO's *School
+   of Digital Circuit Synthesis* — a free two-semester course built on an MIT course, taught by staff
+   from MIET, MFTI and ITMO, delivered online or at partner university clusters. Your club is
+   evidently one of those clusters. So `/club/join`'s primary CTA sends people to a **third party's
+   program signup**, not a club membership form. The page has to say that or visitors will be
+   confused. Proposed wording in `05` §9. 🔴 Confirm.
+2. **SoC Design Challenge, verified:** run by YADRO **with MIET**, held at MIET in Zelenograd; teams
+   of 2–3 full-time students from Russia and Belarus; tracks are Topological Design, RTL Design, UVM
+   Verification, System Verification and DFT Structures; the 2024 edition drew 260+ participants from
+   16 cities; 2026 ran 24–26 April. All safe to publish. Your placement is not — hence blocker 6.
+3. **ADV-T:** legal name **ООО «Адв-Тех»**, a full-cycle systems integrator in Moscow (Mitinskaya 16),
+   ~20 years in IT services, serving government, telecoms, chemical manufacturing and retail. Recorded
+   in `11` §6. Confirm how they want to be credited — the Russian legal name, "ADV-T", or a logo.
+4. **Your GitHub org has 24 repos**, ~15 of them club projects — enough to seed the whole directory
+   without waiting for anyone to write new content. Listed with suggested tags in `11` §7. Note
+   `student-projects` already duplicates this list; once the site is live it should link here rather
+   than be maintained in parallel.
+5. **Seven of those fifteen are games.** Fine — games are how people learn RTL — but spread
+   `featured: true` across riscv / memory / dsp / vision so the first screen doesn't read as a games
+   list.
 
 ---
 
-### C5. Resources
+## Part 4 — Kept as you decided
 
-**Equipment to publish** (item · notes · how to book):
-```
+For the record, and so nobody "improves" them later. These were in section D and you marked them
+KEEP:
 
-```
+- `MobileNav` is not an island — inline script, so the framework stays off 9 of 11 routes.
+- Controlled tag vocabulary, build-time validated.
+- Homepage stats derived from content, never typed. *(With one addition: **no member count** — the
+  roster is deliberately partial under D8, so a derived count would understate the club and a typed
+  one would be fiction.)*
+- `Contact` in the footer, not the header.
+- Light theme default, dark as a toggle.
+- `draft: true` projects get no URL at all.
 
-**Curated links you already share with new members:**
-```
-
-```
-
----
-
-### `[ ]` C6. About page
-
-**Mission, in your own words** — 2–3 paragraphs:
-```
-generate based on a websearch and provided info
-```
-
-**History worth a timeline** (founding, notable wins, milestones):
-```
-
-```
-
-**Awards and competition results:**
-```
-search about and insert short info
-https://edu.yadro.com/soc-design-challenge/
-
-We have participated in 2023, 2024, 2025, 2026.
-Won prices in 2024.
-
-```
-
-**Sponsors or partners to credit:**
-> None, ADV-T LLC.
-
----
-
-## D. Things I decided so you don't have to — veto if you disagree
-
-Each was a judgement call within your stated direction. All are cheap to change now, more expensive
-after the phase in brackets. **Mark `KEEP` or `CHANGE` in the last column.**
-
-| # | Decision | Reasoning | Cost to change | KEEP / CHANGE |
-|---|---|---|---|---|
-| D-a | **`MobileNav` is not a React island** | Otherwise React loads on all 9 routes for a menu toggle | Free [ph.1] | true (keep it static) |
-| D-b | **Team chips link to `/projects?team=<id>`** | Gives members a shareable "my work" URL with no person pages | Free [ph.3] | no need. There is no uniform teams. Team is just a collection of it's participants and each team unique to the project. |
-| D-c | **Controlled tag vocabulary, build-time validated** | Free-text tags fragment within a semester and ruin the facet UI | Low [ph.2] | true, predefined set of tags |
-| D-d | **`cover` + `coverAlt` required on every project** | A grid with some cards image-less looks broken | Low [ph.2] | projects without photos should use stub (default) image, everything should look uniform. |
-| D-e | **Homepage stats derived from content, never typed** | Hardcoded counts go stale and cost credibility | Free [ph.5] | true |
-| D-f | **Pagination, not infinite scroll** | Back button, deep links, and a visible total | Low [ph.4] | okay, but page size is huge, 100 projects per page |
-| D-g | **Lightbox state not in the URL** | Would collide with the `/projects` back-button semantics | Free [ph.3] | need to be clarified |
-| D-h | **`Contact` in the footer, not the header** | Header already carries 5 nav items + 2 service buttons | Free [ph.1] | ok |
-| D-i | **Static map image on `/contact`, not an embed** | An embedded map is a third-party tracker on a site with no analytics | Free [ph.5] | okay, but image should be clickable redirect to ya maps |
-| D-j | **Light theme default, dark as a toggle** | Follows your "light, bright & academic" choice | Free [ph.1] | okay |
-| D-k | **CSP ships report-only for one week** | An untested enforced CSP breaks pages in hard-to-attribute ways | Free [ph.7] | need to be clarified |
-| D-l | **`draft: true` projects get no URL at all** | A draft with a live URL will be found and shared | Free [ph.2] | ok |
-
-**Anything else you want changed:**
-> Project page has a list of projects with photo on left and project details in center and right. With margins on sides. No grid.
-
-> Project statuses: Draft, Idea, Work in progress, Completed. Could be improved if any suggestions
-
----
-
-## E. Two things worth reconsidering
-
-Not objections — you decided both explicitly and I've specced them as chosen. Recorded so the
-trade-off stays visible. **Answer `KEEP` or `SWITCH`.**
-
-### E1. React for three islands
-
-`ProjectExplorer` is genuinely stateful and benefits from React; the lightbox and menu do not. The
-cost is ~45 KB gzipped on `/projects` and `/projects/<slug>`. Preact via `@astrojs/preact` is
-API-compatible for what we're writing and would cut that to ~4 KB — a one-line config change plus an
-alias, no component rewrites. Entirely reasonable to keep React for contributor familiarity.
-
-**Decision (KEEP React / SWITCH to Preact):**
-> Switch to preact, okay
-
-### E2. Direct video iframes
-
-The provider sees every visitor's IP and can set storage the moment a project page loads — on a site
-that otherwise makes zero third-party requests and needs no cookie banner. A click-to-load poster
-facade would preserve that property for the cost of one poster image per project. Contained to
-`<VideoEmbed>` plus one schema field (`04-media.md` §B2).
-
-**Decision (KEEP direct iframes / SWITCH to facade):**
-> switch to clickable preview
-
----
-
-## F. Anything I haven't asked about
-
-Constraints, preferences, university requirements, things you've seen on other club sites that you
-want or specifically don't want:
-
-```
-
-```
+And the three reversals of your original brief, still standing: Pagefind instead of Fuse.js, Caddy
+instead of nginx, and — now partially un-reversed — **all four video providers** rather than one.
