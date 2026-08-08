@@ -1,0 +1,12 @@
+---
+/** Max-width 1200px, gutters 24px desktop / 16px mobile (06 §3). */
+interface Props {
+  as?: 'div' | 'section' | 'header' | 'footer' | 'main' | 'nav';
+  class?: string;
+}
+const { as: Tag = 'div', class: className = '' }: Props = Astro.props;
+---
+
+<Tag class:list={['mx-auto w-full max-w-(--container-page) px-4 sm:px-6', className]}>
+  <slot />
+</Tag>

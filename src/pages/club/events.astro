@@ -1,0 +1,98 @@
+---
+/**
+ * `/club/events` — one flat reverse-chronological list, grouped under year headings.
+ *
+ * NO dated "next meeting" banner (D26). Nobody volunteered to keep one current, so what ships is
+ * the standing recurrence line below, which stays true for years without maintenance and points at
+ * the chat as the live source. A stale date makes a site look abandoned; a standing sentence does
+ * not.
+ *
+ * There is also no upcoming/past split: a date comparison frozen at build time silently mislabels
+ * every event the day after a deploy.
+ */
+import { getCollection } from 'astro:content';
+import ClubLayout from '../../layouts/ClubLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import PageHeader from '../../components/ui/PageHeader.astro';
+import Button from '../../components/ui/Button.astro';
+import EmptyState from '../../components/ui/EmptyState.astro';
+import { Icon } from 'astro-icon/components';
+import { site } from '../../data/site';
+import { formatDateRange } from '../../lib/format';
+
+const events = (await getCollection('events', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+
+const byYear = new Map<number, typeof events>();
+for (const event of events) {
+  const year = event.data.date.getUTCFullYear();
+  byYear.set(year, [...(byYear.get(year) ?? []), event]);
+}
+---
+
+<ClubLayout
+  title="Events"
+  description={`Meetings, workshops and competitions. ${site.meetings.recurrence} ${site.meetings.season}.`}
+>
+  <PageHeader title="Events">
+    <p class="mt-4 max-w-(--spacing-prose) text-(length:--text-lead) text-(--color-muted)">
+      {site.meetings.recurrence} {site.meetings.season}. {site.meetings.locationNote}
+    </p>
+    <div class="mt-6">
+      <Button href={site.contact.chat} variant="secondary" size="sm">Open chat</Button>
+    </div>
+  </PageHeader>
+
+  <Container class="pb-20">
+    {
+      events.length === 0 ? (
+        <EmptyState title="Nothing recorded yet">
+          Event entries live in <code>src/content/events/</code>. The seeded templates ship with{' '}
+          <code>draft: true</code>, so nothing invented can reach the built site by accident.
+        </EmptyState>
+      ) : (
+        <div class="flex flex-col gap-12">
+          {[...byYear.entries()].map(([year, group]) => (
+            <section aria-labelledby={`year-${year}`}>
+              <h2 id={`year-${year}`} class="text-(length:--text-h2) leading-(--text-h2--line-height)">
+                {year}
+              </h2>
+              <ul class="mt-4 border-t border-(--color-border)">
+                {group.map((event) => (
+                  <li class="border-b border-(--color-border) py-5">
+                    <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                      <span class="text-(length:--text-meta) text-(--color-muted)">
+                        {formatDateRange(event.data.date, event.data.endDate)}
+                      </span>
+                      <h3 class="text-(length:--text-h3) leading-(--text-h3--line-height)">
+                        {event.data.link ? (
+                          <a
+                            href={event.data.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-1 hover:text-(--color-accent)"
+                          >
+                            {event.data.title}
+                            <Icon name="lucide:arrow-up-right" class="size-4" aria-hidden="true" />
+                          </a>
+                        ) : (
+                          event.data.title
+                        )}
+                      </h3>
+                    </div>
+                    {event.data.location && (
+                      <p class="mt-1 text-(length:--text-meta) text-(--color-muted)">
+                        {event.data.location}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )
+    }
+  </Container>
+</ClubLayout>

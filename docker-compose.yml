@@ -1,0 +1,26 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        # SITE_URL is baked into every canonical tag, sitemap entry, OG URL and JSON-LD block at
+        # BUILD time. A container built for localhost and deployed to the real domain serves link
+        # previews and a sitemap pointing at localhost — hence `:?`, which fails loudly.
+        SITE_URL: ${SITE_URL:?SITE_URL must be set in .env}
+    image: club-site:latest
+    restart: unless-stopped
+    ports:
+      - '${HOST_PORT:-8080}:8080'
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS::8080}
+      AUTO_HTTPS: ${AUTO_HTTPS:-off}
+    # Stateless and read-only: no database, no volume, no writable path, nothing to back up other
+    # than the git repository itself.
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /config
+      - /data
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]

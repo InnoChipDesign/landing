@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="InnoChipDesign">
+  <!--
+    🔴 PLACEHOLDER MARK — 11-club-data.md §1, 06-design-system.md §7.
+
+    The club leader will supply a JPG. A JPG cannot produce favicon.svg and gives an opaque white
+    box for the touch icon and the OG template. Ask for an SVG, or a PNG with transparency at
+    >= 512x512. Whichever arrives, it is rebuilt ONCE as this file, and this file is then the
+    source for the whole icon set, the header wordmark, the portal cards, the cover stub and the
+    OG images.
+
+    Until then: a die on a package. currentColor throughout, so it inherits the theme.
+  -->
+  <g fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="17" y="17" width="30" height="30" rx="4" />
+    <rect x="27" y="27" width="10" height="10" rx="1.5" fill="currentColor" stroke="none" />
+    <path d="M24 17V9M32 17V9M40 17V9M24 55v-8M32 55v-8M40 55v-8M17 24H9M17 32H9M17 40H9M55 24h-8M55 32h-8M55 40h-8" />
+  </g>
+</svg>

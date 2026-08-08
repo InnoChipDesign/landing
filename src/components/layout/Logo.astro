@@ -1,0 +1,12 @@
+---
+/** The club mark. Inherits `currentColor`, so it is correct in both themes without a second file. */
+import logo from '../../assets/logo.svg';
+
+interface Props {
+  class?: string;
+}
+const { class: className = 'size-7' } = Astro.props;
+const Mark = logo;
+---
+
+<Mark class={className} aria-hidden="true" role="presentation" />

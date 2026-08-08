@@ -1,0 +1,34 @@
+---
+/**
+ * Project status (D23). Colour is never the only carrier of meaning (06 §6.6) — the pill always
+ * prints the label, and the dot is decorative.
+ */
+import { STATUS_LABELS } from '../../lib/format';
+
+interface Props {
+  status: keyof typeof STATUS_LABELS;
+  class?: string;
+}
+
+const { status, class: className = '' } = Astro.props;
+
+const DOT: Record<keyof typeof STATUS_LABELS, string> = {
+  idea: 'var(--color-muted)',
+  'in-progress': 'var(--color-warm)',
+  completed: 'var(--color-success)',
+  archived: 'var(--color-border)',
+};
+---
+
+<span
+  class:list={[
+    'inline-flex items-center gap-1.5 rounded-(--radius-full) border border-(--color-border) px-2.5 py-0.5 text-(length:--text-chip) font-medium text-(--color-muted)',
+    className,
+  ]}
+>
+  <span
+    class="size-1.5 shrink-0 rounded-full"
+    style={`background-color: ${DOT[status]}`}
+    aria-hidden="true"></span>
+  {STATUS_LABELS[status]}
+</span>

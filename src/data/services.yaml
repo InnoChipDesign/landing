@@ -1,0 +1,44 @@
+# The club's web properties. One file drives three surfaces (D16, 02-content-model.md §6):
+#   · the portal grid at /            → entries with `onPortal: true`
+#   · the two header buttons on every /club/* page → entries with `inHeader: true`
+#   · "Services built by us" on /club/resources    → all entries
+#
+# Build assertions (src/lib/validate.ts):
+#   · at most TWO entries with `inHeader: true` — a third breaks the header layout
+#   · every `onPortal: true` entry needs a `name` and a resolvable `url`
+#
+# `kind: external` drives target="_blank" rel="noopener noreferrer" and the ↗ glyph everywhere the
+# service is rendered — in one place rather than three.
+# `status: retired` renders greyed but still listed on /club/resources (retired work is part of the
+# club's record) and is excluded from the portal and the header.
+
+- id: club
+  name: The Club
+  tagline: Projects, events and how to join.
+  url: /club
+  kind: internal
+  status: live
+  onPortal: true
+  inHeader: false # it IS the site; no self-link button
+
+- id: vcd
+  name: VCD
+  # 🔴 PLACEHOLDER — 11-club-data.md §3. The leader answered "no other info needed", but this is the
+  # only string a portal visitor reads before deciding to click. One real sentence, ≤ 60 chars.
+  # If one cannot be supplied, DELETE the tagline field and the card renders as a name-only tile.
+  tagline: Waveform viewer for lab work.
+  url: https://vcd.innochipdesign.ru
+  kind: external
+  status: live
+  onPortal: true
+  inHeader: true
+
+- id: hw
+  name: HW
+  # 🔴 PLACEHOLDER — same as above.
+  tagline: Homework submission and grading.
+  url: https://homework.innochipdesign.ru
+  kind: external
+  status: live
+  onPortal: true
+  inHeader: true

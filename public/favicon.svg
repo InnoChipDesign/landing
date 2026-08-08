@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!--
+    🔴 PLACEHOLDER — regenerate the whole icon set from src/assets/logo.svg once the real logo
+    arrives (06-design-system.md §7). The `prefers-color-scheme` block below is the reason this
+    must be an SVG and not a JPG: one file, correct on a light and a dark browser chrome.
+  -->
+  <style>
+    :root { --mark: #1D4ED8; }
+    @media (prefers-color-scheme: dark) { :root { --mark: #6E9BFF; } }
+  </style>
+  <g fill="none" stroke="var(--mark)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="17" y="17" width="30" height="30" rx="4" />
+    <rect x="27" y="27" width="10" height="10" rx="1.5" fill="var(--mark)" stroke="none" />
+    <path d="M24 17V9M32 17V9M40 17V9M24 55v-8M32 55v-8M40 55v-8M17 24H9M17 32H9M17 40H9M55 24h-8M55 32h-8M55 40h-8" />
+  </g>
+</svg>

@@ -1,0 +1,85 @@
+---
+/**
+ * `/club/equipment` (D31) — a flat lab inventory. No detail pages, no search, no filters, no
+ * pagination: an inventory is read top to bottom.
+ *
+ * Why a rest-parameter route for a single fixed page: 05 §8 requires that while equipment.yaml is
+ * empty the route is NOT GENERATED AT ALL — an empty Equipment page is worse than no Equipment
+ * page. A plain `equipment.astro` always emits a file; only a dynamic route can decline to. A rest
+ * parameter of `undefined` renders exactly the base path, so this file produces `/club/equipment`
+ * and nothing else — or nothing at all. `src/lib/nav.ts` drops the nav item on the same condition,
+ * so a live nav item can never point at a missing page.
+ *
+ * Rows reuse ProjectCover's stub (D21), which is why this page needed no fallback logic of its
+ * own — the same reason it reuses the row layout: the site has one way of presenting "a thing with
+ * a picture and a line of text", not two.
+ */
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import ClubLayout from '../../../layouts/ClubLayout.astro';
+import Container from '../../../components/layout/Container.astro';
+import PageHeader from '../../../components/ui/PageHeader.astro';
+import Button from '../../../components/ui/Button.astro';
+import EquipmentRow from '../../../components/project/EquipmentRow.astro';
+import { site } from '../../../data/site';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const items = await getCollection('equipment');
+  return items.length === 0 ? [] : [{ params: { slug: undefined } }];
+};
+
+const items = (await getCollection('equipment')).sort(
+  (a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name),
+);
+
+// Items with no category render first, ungrouped. `category` is free text, deliberately: a lab
+// inventory does not need the controlled vocabulary a navigational facet does.
+const ungrouped = items.filter((item) => !item.data.category);
+const grouped = new Map<string, typeof items>();
+for (const item of items) {
+  const category = item.data.category;
+  if (category) grouped.set(category, [...(grouped.get(category) ?? []), item]);
+}
+---
+
+<ClubLayout
+  title="Equipment"
+  description="FPGA boards, instruments and other hardware available in the Innopolis University lab for club projects."
+>
+  <PageHeader title="Equipment">
+    <p class="mt-4 max-w-(--spacing-prose) text-(length:--text-lead) text-(--color-muted)">
+      What's available in our lab for club projects. Ask in the Telegram chat to borrow anything on
+      this list.
+    </p>
+    <div class="mt-6">
+      <Button href={site.contact.chat} variant="secondary" size="sm">Open chat</Button>
+    </div>
+  </PageHeader>
+
+  <Container class="pb-20">
+    {
+      ungrouped.length > 0 && (
+        <ul class="border-t border-(--color-border)">
+          {ungrouped.map((item) => (
+            <EquipmentRow item={item} />
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      [...grouped.entries()].map(([category, group]) => (
+        <section class="mt-12 first:mt-0">
+          <h2 class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase">
+            {category}
+          </h2>
+          <ul class="mt-4 border-t border-(--color-border)">
+            {group.map((item) => (
+              <EquipmentRow item={item} />
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </Container>
+</ClubLayout>

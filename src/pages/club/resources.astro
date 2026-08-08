@@ -1,0 +1,121 @@
+---
+/**
+ * `/club/resources` — two distinct halves: the services the club has built (from services.yaml,
+ * the same file that drives the portal and the header), then curated links.
+ *
+ * Sections with `items: []` render NOTHING AT ALL — no "coming soon" heading. A visibly empty
+ * section is worse than an absent one.
+ *
+ * Equipment used to be a section here; it has its own page now (D31) and this page links to it
+ * once rather than duplicating the list.
+ */
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import ClubLayout from '../../layouts/ClubLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import PageHeader from '../../components/ui/PageHeader.astro';
+import Card from '../../components/ui/Card.astro';
+import Button from '../../components/ui/Button.astro';
+import { routes } from '../../lib/routes';
+import { hasEquipment } from '../../lib/nav';
+
+const services = await getCollection('services');
+// Retired services stay listed here — retired work is part of the club's record — but render
+// greyed, and they are excluded from the portal and the header.
+const listed = services.filter((s) => s.data.kind === 'external');
+const sections = (await getCollection('resources')).filter((s) => s.data.items.length > 0);
+const equipmentExists = await hasEquipment();
+---
+
+<ClubLayout
+  title="Resources"
+  description="Tools the club has built, plus the courses, competitions and repositories we point new members at."
+>
+  <PageHeader
+    title="Resources"
+    lead="What we've built, and where to start if you're new to digital design."
+  />
+
+  <Container class="pb-20">
+    {
+      listed.length > 0 && (
+        <section aria-labelledby="services-heading">
+          <h2
+            id="services-heading"
+            class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase"
+          >
+            Services built by us
+          </h2>
+          <ul class="mt-4 grid gap-6 sm:grid-cols-2">
+            {listed.map((service) => (
+              <li class="flex">
+                <Card class={service.data.status === 'retired' ? 'w-full opacity-60' : 'w-full'}>
+                  <div class="flex items-baseline justify-between gap-3">
+                    <h3 class="text-(length:--text-h3) leading-(--text-h3--line-height)">
+                      {service.data.name}
+                    </h3>
+                    <span class="text-(length:--text-chip) font-medium tracking-wide text-(--color-muted) uppercase">
+                      {service.data.status}
+                    </span>
+                  </div>
+                  {service.data.tagline && (
+                    <p class="mt-2 text-(--color-muted)">{service.data.tagline}</p>
+                  )}
+                  {service.data.status !== 'retired' && (
+                    <div class="mt-5">
+                      <Button href={service.data.url} variant="secondary" size="sm">
+                        Open
+                      </Button>
+                    </div>
+                  )}
+                </Card>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      sections.map((section) => (
+        <section class="mt-14" aria-labelledby={`section-${section.id}`}>
+          <h2
+            id={`section-${section.id}`}
+            class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase"
+          >
+            {section.data.section}
+          </h2>
+          <ul class="mt-4 border-t border-(--color-border)">
+            {section.data.items.map((item) => (
+              <li class="border-b border-(--color-border) py-4">
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="group inline-flex items-center gap-1 font-medium hover:text-(--color-accent)"
+                >
+                  {item.title}
+                  <Icon name="lucide:arrow-up-right" class="size-4" aria-hidden="true" />
+                </a>
+                {item.note && (
+                  <p class="mt-1 text-(length:--text-meta) text-(--color-muted)">{item.note}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+
+    {
+      equipmentExists && (
+        <p class="mt-14 text-(--color-muted)">
+          Looking for hardware?{' '}
+          <a href={routes.equipment()} class="text-(--color-accent) hover:underline">
+            See what the lab has →
+          </a>
+        </p>
+      )
+    }
+  </Container>
+</ClubLayout>

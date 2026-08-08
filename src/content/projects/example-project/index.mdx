@@ -1,0 +1,62 @@
+---
+title: Example project — replace or delete this
+summary: A scaffold entry that exercises every part of the project pipeline. It is not a real club project; replace it with a real one or delete the folder.
+year: 2026
+semester: spring
+status: in-progress
+tags: [fpga, riscv]
+featured: false
+team:
+  - { person: m-kuskov, role: Instructor }
+  - { name: A. Student, role: RTL }
+stack: [SystemVerilog, Verilator]
+hardware: [Digilent Basys 3]
+links:
+  repo: https://github.com/InnoChipDesign
+---
+
+{/*
+  This is the ONLY project in the repository, and it exists so that `pnpm dev` shows a working
+  site end to end — a project row, a detail page, the cover stub, the sidebar, related projects.
+
+  Phase 2 of planning/09-implementation-plan.md replaces it: enter 3–5 REAL projects, with real
+  images and a real video, seeded from the GitHub org list in planning/11-club-data.md §7 — and
+  pick ones with range, not four games. Layouts designed against placeholder text break on the
+  first real 90-character project title, and this club has one.
+
+  Note what is deliberately absent here: no `cover`, no `gallery`, no `video`. A project with none
+  of those is still publishable — the stub cover renders and the layout closes the gaps (D21). That
+  is worth seeing once before you assume every project needs a photo.
+*/}
+
+## The problem
+
+Describe what the project set out to do, in a paragraph a second-year student could follow. Assume
+the reader knows what an FPGA is and nothing else about your project.
+
+## How it works
+
+Block diagrams, the interesting design decisions, and the parts that turned out to be harder than
+expected. Code blocks matter more here than on a typical club site — Verilog and SystemVerilog
+snippets are the substance, and they highlight correctly:
+
+```system-verilog
+module counter #(parameter WIDTH = 8) (
+    input  logic             clk,
+    input  logic             rst_n,
+    output logic [WIDTH-1:0] count
+);
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) count <= '0;
+        else        count <= count + 1'b1;
+    end
+endmodule
+```
+
+## Results
+
+What worked, what the measured numbers were, and what you would do differently.
+
+## What's next
+
+Open threads, or "nothing — this one is finished".

@@ -1,0 +1,102 @@
+---
+/**
+ * Cover-or-stub (D21, 04-media.md §A2).
+ *
+ * NOTHING else in the codebase may render a project — or equipment — thumbnail directly. That is
+ * how "some rows have images and some have holes" gets shipped. /club/equipment reuses this
+ * component for exactly that reason, which is also why that page needed no new fallback logic.
+ *
+ * The stub is inline SVG rather than a raster file: ~400 bytes, no image-pipeline pass, scales to
+ * any slot, and picks up theme tokens so it is correct in dark mode without a second asset.
+ */
+import { Image } from 'astro:assets';
+import Logo from '../layout/Logo.astro';
+
+interface Props {
+  /** Used to derive the stub's tint. Stable across builds. */
+  slug: string;
+  /** Printed inside the stub, clamped to two lines. */
+  title: string;
+  image?: ImageMetadata;
+  alt?: string;
+  /** 4:3 in lists, 16:9 for a video poster slot. */
+  aspect?: '4/3' | '16/9';
+  sizes?: string;
+  widths?: number[];
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const {
+  slug,
+  title,
+  image,
+  alt,
+  aspect = '4/3',
+  sizes = '(min-width: 1024px) 180px, (min-width: 768px) 128px, 100vw',
+  widths = [180, 360, 540],
+  loading = 'lazy',
+  class: className = '',
+} = Astro.props;
+
+// hash(slug) % 360, at a saturation and lightness that keeps every stub from fighting the accent
+// colour. Deterministic — the same project gets the same tint on every build, so a redeploy never
+// silently reshuffles the directory's colours.
+function hue(value: string): number {
+  let h = 0;
+  for (let i = 0; i < value.length; i += 1) h = (h * 31 + value.charCodeAt(i)) % 360;
+  return h;
+}
+
+const h = hue(slug);
+const wrapper = [
+  'relative overflow-hidden rounded-(--radius-md) bg-(--color-surface-2)',
+  className,
+];
+---
+
+<div class:list={wrapper} style={`aspect-ratio: ${aspect}`}>
+  {
+    image ? (
+      <Image
+        src={image}
+        alt={alt ?? ''}
+        widths={widths}
+        sizes={sizes}
+        loading={loading}
+        decoding="async"
+        fetchpriority={loading === 'eager' ? 'high' : undefined}
+        class="size-full object-cover"
+      />
+    ) : (
+      /* Decorative: the adjacent link text already carries the title, and announcing
+         "placeholder image" to a screen-reader user is noise. */
+      <div
+        class="flex size-full flex-col items-center justify-center gap-2 px-3 text-center"
+        style={`--stub-bg: hsl(${h} 42% 94%); --stub-fg: hsl(${h} 38% 32%); --stub-bg-dark: hsl(${h} 26% 17%); --stub-fg-dark: hsl(${h} 38% 76%)`}
+        aria-hidden="true"
+        data-stub
+      >
+        <Logo class="size-8 opacity-80" />
+        <span class="line-clamp-2 font-(family-name:--font-display) text-[0.8125rem] leading-tight">
+          {title}
+        </span>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  /* The tint is computed per project, so dark mode cannot just redefine a token — both pairs are
+     emitted inline and the theme picks one. Same hue in both, only the lightness swaps, so a
+     project keeps its identity across themes and neither pair drops below AA. */
+  [data-stub] {
+    background-color: var(--stub-bg);
+    color: var(--stub-fg);
+  }
+
+  :global(.dark) [data-stub] {
+    background-color: var(--stub-bg-dark);
+    color: var(--stub-fg-dark);
+  }
+</style>

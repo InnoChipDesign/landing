@@ -1,0 +1,109 @@
+---
+/**
+ * Click-to-load video (D10/E2, 04-media.md §B2). Until a visitor clicks, the site makes ZERO
+ * third-party requests on any page — which is why no cookie banner is needed and why `frame-src`
+ * is the only third-party allowance in the whole CSP.
+ *
+ * Not an island. One click handler does not justify hydrating a framework (01 §4).
+ *
+ * The facade is an <a href>, NOT a <div onclick>. With JS disabled — or before the script runs —
+ * clicking still takes the visitor to the video on the provider's site. It is keyboard focusable
+ * and announced correctly for free, with no role/tabindex patching.
+ */
+import { Icon } from 'astro-icon/components';
+import ProjectCover from '../project/ProjectCover.astro';
+import { parseVideoUrl, PROVIDER_LABELS } from '../../lib/video';
+
+interface Props {
+  url: string;
+  title?: string;
+  /** Poster order: videoPoster → cover → the generated stub. NEVER the provider's thumbnail API —
+      that would reintroduce exactly the third-party request this component exists to avoid. */
+  poster?: ImageMetadata;
+  posterAlt?: string;
+  slug: string;
+  projectTitle: string;
+}
+
+const { url, title, poster, posterAlt, slug, projectTitle } = Astro.props;
+
+// Throws at build time on an unknown host; src/lib/validate.ts catches it first and names the file.
+const embed = parseVideoUrl(url);
+const providerLabel = PROVIDER_LABELS[embed.provider];
+const label = title ?? `${projectTitle} — demo`;
+---
+
+<figure class="not-prose">
+  {/* The aspect-ratio box reserves space for BOTH states, so swapping the facade for the iframe
+      causes zero layout shift. */}
+  <div
+    class="relative overflow-hidden rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface-2)"
+    style={`aspect-ratio: ${embed.aspect}`}
+    data-video
+  >
+    <a
+      href={embed.watchUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-embed={embed.embedUrl}
+      data-title={label}
+      aria-label={`Play: ${label} (loads ${providerLabel})`}
+      class="group absolute inset-0 flex items-center justify-center"
+    >
+      <ProjectCover
+        slug={slug}
+        title={projectTitle}
+        image={poster}
+        alt={posterAlt}
+        aspect="16/9"
+        sizes="(min-width: 1024px) 760px, 100vw"
+        widths={[640, 1280]}
+        class="absolute inset-0 size-full rounded-none"
+      />
+
+      <span
+        class="relative flex size-16 items-center justify-center rounded-full bg-(--color-bg)/90 shadow-(--shadow-md) transition-transform duration-(--dur-base) ease-(--ease-out) group-hover:scale-105"
+        aria-hidden="true"
+      >
+        <Icon name="lucide:play" class="ml-0.5 size-6 text-(--color-accent)" />
+      </span>
+
+      {/* Visible, not a tooltip. On a site with no other third-party requests, telling people
+          what a click costs is the honest default. */}
+      <span
+        class="absolute right-3 bottom-3 rounded-(--radius-full) bg-(--color-bg)/90 px-3 py-1 text-(length:--text-meta) text-(--color-muted)"
+      >
+        Loads from {providerLabel}
+      </span>
+    </a>
+  </div>
+  {title && <figcaption class="mt-2 text-(length:--text-meta) text-(--color-muted)">{title}</figcaption>}
+</figure>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-video]')) {
+    const facade = box.querySelector<HTMLAnchorElement>('a[data-embed]');
+    if (!facade) continue;
+
+    facade.addEventListener('click', (event) => {
+      // Let modified clicks (new tab, save) fall through to the real href.
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+      event.preventDefault();
+
+      const iframe = document.createElement('iframe');
+      const embed = facade.dataset.embed ?? '';
+      // `autoplay=1` goes only on the click-injected iframe, so the video starts on the click the
+      // visitor already made. Never on load.
+      iframe.src = embed + (embed.includes('?') ? '&' : '?') + 'autoplay=1';
+      iframe.title = facade.dataset.title ?? 'Demo video';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.allow =
+        'accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.className = 'absolute inset-0 size-full border-0';
+
+      box.replaceChildren(iframe);
+      iframe.focus();
+    });
+  }
+</script>

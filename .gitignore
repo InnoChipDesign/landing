@@ -1,27 +1,25 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# build output
+dist/
+.astro/
 
 # dependencies
-/node_modules
+node_modules/
 
-# next.js
-/.next/
-/out/
+# dev-only Pagefind snapshot written by `pnpm search:dev` (01-architecture.md §5)
+public/pagefind/
 
-# production
-/build
+# environment
+.env
+.env.*
+!.env.example
 
-# debug
+# logs & editor
+*.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files
-.env*
-
-# vercel
-.vercel
+pnpm-debug.log*
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts

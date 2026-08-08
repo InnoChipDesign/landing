@@ -1,0 +1,61 @@
+---
+/**
+ * `/` — the PORTAL (D19). A switchboard, not a page: its whole job is to get a visitor to the
+ * right property in one click.
+ *
+ * Zero JS except the theme script. This page must be the fastest thing on the domain.
+ *
+ * The cards come from services.yaml — the same file that drives the two header buttons and the
+ * "Services built by us" section on /club/resources. Adding a fourth property is a data change.
+ */
+import PortalLayout from '../layouts/PortalLayout.astro';
+import Container from '../components/layout/Container.astro';
+import Logo from '../components/layout/Logo.astro';
+import PortalCard from '../components/portal/PortalCard.astro';
+import { site } from '../data/site';
+import { portalServices } from '../lib/nav';
+
+const services = await portalServices();
+---
+
+<PortalLayout title={site.name} description={site.tagline} image="/og/portal.png">
+  <Container class="py-16 text-center sm:py-24">
+    <Logo class="mx-auto size-12 text-(--color-accent)" />
+    <h1 class="mt-6 text-(length:--text-display) leading-(--text-display--line-height)">
+      {site.name}
+    </h1>
+    <p class="mx-auto mt-4 max-w-xl text-(length:--text-lead) text-(--color-muted)">
+      {site.tagline}
+    </p>
+
+    <ul class="mt-12 grid gap-5 text-left sm:grid-cols-2 lg:grid-cols-3">
+      {services.map((service) => <li><PortalCard service={service} /></li>)}
+    </ul>
+
+    {/* A plain text strip. No nav, no columns — anything more and this is a homepage. */}
+    <p
+      class="mt-12 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-(length:--text-meta) text-(--color-muted)"
+    >
+      <a href={site.university.url} target="_blank" rel="noopener noreferrer" class="hover:text-(--color-text)">
+        {site.university.name}
+      </a>
+      <span aria-hidden="true">·</span>
+      <span>Founded {site.foundedYear}</span>
+      {
+        site.social.map((account) => (
+          <>
+            <span aria-hidden="true">·</span>
+            <a
+              href={account.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-(--color-text)"
+            >
+              {account.label}
+            </a>
+          </>
+        ))
+      }
+    </p>
+  </Container>
+</PortalLayout>

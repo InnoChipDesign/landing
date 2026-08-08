@@ -1,0 +1,169 @@
+---
+/**
+ * `/club` — the club home. Showcase-first (D17): showcase → what we do → mission + derived stats →
+ * team → join CTA.
+ */
+import { getCollection } from 'astro:content';
+import ClubLayout from '../../layouts/ClubLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import Section from '../../components/ui/Section.astro';
+import Button from '../../components/ui/Button.astro';
+import Stat from '../../components/ui/Stat.astro';
+import ProjectCard from '../../components/project/ProjectCard.astro';
+import { Icon } from 'astro-icon/components';
+import { site } from '../../data/site';
+import { routes } from '../../lib/routes';
+import { featuredProjects, tagLabels, clubStats } from '../../lib/projects';
+
+const featured = await featuredProjects(3);
+const labels = await tagLabels();
+const stats = await clubStats(site.foundedYear);
+const people = await getCollection('people');
+const officers = people.filter((p) => p.data.officer);
+
+// "What we do" maps onto real tags, so each card links into the directory pre-filtered. Free
+// navigation, and no extra content to keep in sync (05 §4).
+const focusAreas = [
+  { icon: 'lucide:cpu', title: 'FPGA', body: 'Writing RTL and running it on real boards.', tag: 'fpga' },
+  { icon: 'lucide:microchip', title: 'RISC-V & CPU design', body: 'Cores, pipelines, microarchitecture.', tag: 'riscv' },
+  { icon: 'lucide:shield-check', title: 'Verification', body: 'Testbenches, coverage, formal methods.', tag: 'verification' },
+  { icon: 'lucide:layers', title: 'ASIC flows', body: 'Synthesis, place & route, toward tapeout.', tag: 'asic' },
+] as const;
+---
+
+<ClubLayout title={site.fullName} description={site.pitch}>
+  {/* HERO */}
+  <Container class="py-16 sm:py-24">
+    <div class="grid items-center gap-10 lg:grid-cols-2">
+      <div>
+        <h1 class="text-(length:--text-display) leading-(--text-display--line-height)">
+          {site.name}
+        </h1>
+        <p class="mt-5 max-w-(--spacing-prose) text-(length:--text-lead) text-(--color-muted)">
+          {site.pitch}
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Button href={routes.projects()}>See our projects</Button>
+          <Button href={routes.join()} variant="secondary">Join the club</Button>
+        </div>
+      </div>
+
+      {/* 🔴 The hero photo is the LCP element and wants `loading="eager" fetchpriority="high"`
+          once a real image exists at src/assets/images/hero.jpg (05 §4). Until then this box
+          holds the same space so the layout does not move when it lands. */}
+      <div
+        class="hidden aspect-[4/3] items-center justify-center rounded-(--radius-lg) border border-dashed border-(--color-border) bg-(--color-surface) text-(length:--text-meta) text-(--color-muted) lg:flex"
+      >
+        Hero photo — members at a bench with FPGA boards
+      </div>
+    </div>
+  </Container>
+
+  {/* FEATURED — falls back to the three newest, so this section is never empty. */}
+  {
+    featured.length > 0 && (
+      <Section
+        title="Featured projects"
+        actionLabel={`${stats.projectCount} projects and counting`}
+        actionHref={routes.projects()}
+        tone="surface"
+      >
+        <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((project) => (
+            <li class="flex">
+              <ProjectCard project={project} tagLabels={labels} />
+            </li>
+          ))}
+        </ul>
+        <div class="mt-8 flex justify-center">
+          <Button href={routes.projects()} variant="secondary">Browse all projects</Button>
+        </div>
+      </Section>
+    )
+  }
+
+  {/* WHAT WE DO */}
+  <Section title="What we do">
+    <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        focusAreas.map((area) => (
+          <li>
+            <a
+              href={`${routes.projects()}?tags=${area.tag}`}
+              class="flex h-full flex-col rounded-(--radius-lg) border border-(--color-border) p-5 transition-colors duration-(--dur-fast) hover:border-(--color-accent)/40 hover:bg-(--color-surface)"
+            >
+              <Icon name={area.icon} class="size-6 text-(--color-accent)" aria-hidden="true" />
+              <h3 class="mt-4 text-(length:--text-h3) leading-(--text-h3--line-height)">
+                {area.title}
+              </h3>
+              <p class="mt-2 text-(length:--text-meta) text-(--color-muted)">{area.body}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  {/* MISSION + DERIVED STATS. Every number below is computed from content at build time.
+      Note the absence of a member count: the roster is partial by design (D8), so a count from
+      people.yaml would understate the club and a typed one would be a fiction. */}
+  <Section tone="surface">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div class="max-w-(--spacing-prose)">
+        <h2 class="text-(length:--text-h2) leading-(--text-h2--line-height)">What we are</h2>
+        <p class="mt-4 text-(--color-muted)">
+          We formed in {site.foundedYear} around a simple idea: that the way to understand how a
+          processor works is to build one. Our members design digital hardware — writing RTL,
+          running it on FPGA boards, verifying it, and taking the better projects toward an ASIC
+          flow.
+        </p>
+        <p class="mt-4 text-(--color-muted)">{site.competition.record}</p>
+        <p class="mt-6">
+          <a href={routes.about()} class="font-medium text-(--color-accent) hover:underline">
+            More about the club →
+          </a>
+        </p>
+      </div>
+
+      <dl
+        class="grid h-fit grid-cols-3 gap-6 rounded-(--radius-lg) border border-(--color-border) bg-(--color-bg) p-6"
+      >
+        <Stat value={stats.projectCount} label="projects published" />
+        <Stat value={stats.years} label="years running" />
+        <Stat value={stats.tagCount} label="areas covered" />
+      </dl>
+    </div>
+  </Section>
+
+  {/* TEAM — leadership block only. No full roster, no person pages (D8). */}
+  {
+    officers.length > 0 && (
+      <Section title="Who runs it">
+        <ul class="flex flex-wrap gap-4">
+          {officers.map((person) => (
+            <li class="rounded-(--radius-lg) border border-(--color-border) px-5 py-4">
+              <p class="font-medium">{person.data.name}</p>
+              {person.data.role && (
+                <p class="text-(length:--text-meta) text-(--color-muted)">{person.data.role}</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  {/* JOIN CTA */}
+  <Section tone="surface">
+    <div class="rounded-(--radius-lg) border border-(--color-border) bg-(--color-bg) p-8 text-center">
+      <h2 class="text-(length:--text-h2) leading-(--text-h2--line-height)">Come along</h2>
+      <p class="mx-auto mt-4 max-w-(--spacing-prose) text-(--color-muted)">
+        {site.meetings.recurrence} {site.meetings.season}. {site.meetings.locationNote}
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <Button href={site.join.formUrl}>{site.join.formLabel}</Button>
+        <Button href={site.join.chatUrl} variant="secondary">Ask us on Telegram</Button>
+      </div>
+    </div>
+  </Section>
+</ClubLayout>

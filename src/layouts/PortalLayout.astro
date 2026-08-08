@@ -1,0 +1,27 @@
+---
+/**
+ * The portal at `/` (D19). No header nav, no footer nav — it is a switchboard, not a page.
+ *
+ * It shares BaseLayout, every token, both fonts and the theme script with the club zone. What
+ * distinguishes it is DENSITY, not palette (06 §8): three large cards, a short page, no
+ * navigation. If it ever grows a projects section or an about paragraph it has become a homepage,
+ * and the /club split has lost its point.
+ */
+import BaseLayout from './BaseLayout.astro';
+import SkipLink from '../components/layout/SkipLink.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+const props = Astro.props;
+---
+
+<BaseLayout {...props} bodyClass="flex min-h-dvh flex-col">
+  <SkipLink />
+  <main id="main" class="flex flex-1 flex-col justify-center">
+    <slot />
+  </main>
+</BaseLayout>

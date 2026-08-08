@@ -1,0 +1,56 @@
+---
+/**
+ * A thin variant of ProjectRow (D31). Same visual grammar as the project directory.
+ *
+ * The row is a link ONLY when `link` is set; otherwise it is a plain <article>. A row that looks
+ * clickable and isn't is worse than one that doesn't.
+ */
+import { Icon } from 'astro-icon/components';
+import type { CollectionEntry } from 'astro:content';
+import ProjectCover from './ProjectCover.astro';
+
+interface Props {
+  item: CollectionEntry<'equipment'>;
+}
+
+const { item } = Astro.props;
+const { name, description, link, photo, photoAlt } = item.data;
+const Tag = link ? 'a' : 'article';
+---
+
+<li class="content-auto border-b border-(--color-border) last:border-b-0">
+  <Tag
+    href={link}
+    target={link ? '_blank' : undefined}
+    rel={link ? 'noopener noreferrer' : undefined}
+    class:list={[
+      'flex flex-col gap-4 rounded-(--radius-md) p-4 sm:flex-row sm:items-start sm:gap-6',
+      link &&
+        'transition-colors duration-(--dur-fast) ease-(--ease-out) hover:bg-(--color-surface)',
+    ]}
+  >
+    <ProjectCover
+      slug={item.id}
+      title={name}
+      image={photo}
+      alt={photoAlt}
+      class="w-full shrink-0 sm:w-32 lg:w-45"
+    />
+
+    <div class="min-w-0 flex-1">
+      <h3 class="text-(length:--text-h3) leading-(--text-h3--line-height)">{name}</h3>
+      {description && <p class="mt-1 text-(--color-muted)">{description}</p>}
+    </div>
+
+    {
+      link && (
+        <span
+          class="inline-flex shrink-0 items-center gap-1 text-(length:--text-meta) text-(--color-accent)"
+        >
+          Reference
+          <Icon name="lucide:arrow-up-right" class="size-3.5" aria-hidden="true" />
+        </span>
+      )
+    }
+  </Tag>
+</li>

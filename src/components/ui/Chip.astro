@@ -1,0 +1,44 @@
+---
+/**
+ * A tag chip. Always a <span>, never a link — inside a ProjectRow the whole row is one <a>, and a
+ * nested link there is invalid HTML and unreachable by keyboard (06 §4).
+ *
+ * The colour comes from tags.yaml. An unknown colour name falls back to --color-surface-2 rather
+ * than throwing: a mistyped colour should not break a build that a mistyped *tag* already catches.
+ */
+interface Props {
+  label: string;
+  color?: string;
+  class?: string;
+}
+
+const { label, color = 'slate', class: className = '' } = Astro.props;
+
+const KNOWN = new Set([
+  'blue',
+  'violet',
+  'teal',
+  'indigo',
+  'cyan',
+  'sky',
+  'amber',
+  'rose',
+  'emerald',
+  'fuchsia',
+  'slate',
+]);
+
+// Tailwind cannot see a class name built at runtime, so the background comes through an inline
+// custom property pointing at a token that is always defined for both themes.
+const token = KNOWN.has(color) ? `var(--color-tag-${color})` : 'var(--color-surface-2)';
+---
+
+<span
+  class:list={[
+    'inline-flex items-center rounded-(--radius-full) px-2.5 py-0.5 font-(family-name:--font-mono) text-(length:--text-chip) leading-(--text-chip--line-height) text-(--color-text)',
+    className,
+  ]}
+  style={`background-color: ${token}`}
+>
+  {label}
+</span>

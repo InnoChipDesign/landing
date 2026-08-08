@@ -1,0 +1,39 @@
+---
+/**
+ * Caddy serves this on any miss, in EITHER zone (05 §12) — a bad path under `/club/` and a bad
+ * path at the root both land here. So every link on it is root-absolute, and the chrome it uses
+ * has to make sense from both.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/layout/Container.astro';
+import Logo from '../components/layout/Logo.astro';
+import Button from '../components/ui/Button.astro';
+import { site } from '../data/site';
+import { routes } from '../lib/routes';
+---
+
+<BaseLayout
+  title="Page not found"
+  description="That page doesn't exist."
+  noindex
+  bodyClass="flex min-h-dvh flex-col"
+>
+  <main id="main" class="flex flex-1 items-center">
+    <Container class="py-24 text-center">
+      <Logo class="mx-auto size-10 text-(--color-accent)" />
+      <p class="mt-6 font-(family-name:--font-mono) text-(--color-muted)">404</p>
+      <h1 class="mt-2 text-(length:--text-display) leading-(--text-display--line-height)">
+        Nothing at this address
+      </h1>
+      <p class="mx-auto mt-4 max-w-md text-(length:--text-lead) text-(--color-muted)">
+        The page may have moved, or the link may be wrong. A project URL never changes once
+        published, so an old project link should still work.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <Button href={routes.club()}>Club home</Button>
+        <Button href={routes.projects()} variant="secondary">Projects</Button>
+        <Button href={routes.portal()} variant="ghost">All {site.name} sites</Button>
+      </div>
+    </Container>
+  </main>
+</BaseLayout>

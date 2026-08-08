@@ -1,0 +1,15 @@
+node_modules
+dist
+.astro
+.git
+.github
+planning
+# The dev-only search snapshot. If it reaches the image it shadows the real index built by
+# `pagefind` in the build stage (08-deployment.md §3).
+public/pagefind
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.vscode

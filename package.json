@@ -1,0 +1,42 @@
+{
+  "name": "innochipdesign-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build && pnpm index",
+    "index": "pagefind --site dist --glob \"club/projects/**/*.html\"",
+    "preview": "astro preview",
+    "search:dev": "pnpm build && rm -rf public/pagefind && cp -r dist/pagefind public/pagefind",
+    "check": "astro check && tsc --noEmit",
+    "test": "vitest run",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "7.0.5",
+    "@astrojs/preact": "6.0.2",
+    "@astrojs/sitemap": "3.7.3",
+    "@preact/signals": "2.11.0",
+    "astro": "7.2.0",
+    "astro-icon": "1.1.5",
+    "preact": "10.29.8",
+    "sharp": "0.35.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@iconify-json/lucide": "1.2.122",
+    "@resvg/resvg-js": "2.6.2",
+    "@tailwindcss/vite": "4.3.3",
+    "pagefind": "1.5.2",
+    "satori": "0.29.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7",
+    "yaml": "2.9.0"
+  }
+}

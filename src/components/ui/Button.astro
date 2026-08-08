@@ -1,0 +1,73 @@
+---
+/**
+ * Renders an <a> when given `href`, a <button> otherwise. Never a <div onclick> — that would cost
+ * keyboard focus, the correct screen-reader announcement and middle-click, all of which come free
+ * from the right element.
+ *
+ * `external` adds target/rel and the ↗ glyph. It is set automatically when `href` is off-site.
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'md' | 'sm';
+  external?: boolean;
+  type?: 'button' | 'submit';
+  disabled?: boolean;
+  class?: string;
+  'aria-label'?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  external,
+  type = 'button',
+  disabled = false,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const isExternal = external ?? (!!href && /^https?:\/\//.test(href));
+
+const base =
+  'inline-flex items-center justify-center gap-2 rounded-(--radius-sm) font-medium ' +
+  'transition-colors duration-(--dur-fast) ease-(--ease-out) ' +
+  'disabled:cursor-not-allowed disabled:opacity-50';
+
+// min-h-11 keeps every button at the 44px touch target from 06 §6.10.
+const sizes = {
+  md: 'min-h-11 px-5 text-[0.9375rem]',
+  sm: 'min-h-11 px-3 text-(length:--text-meta) sm:min-h-9',
+};
+
+const variants = {
+  primary: 'bg-(--color-accent) text-white hover:bg-(--color-accent-hover)',
+  secondary:
+    'border border-(--color-border) bg-(--color-bg) text-(--color-text) hover:bg-(--color-surface)',
+  ghost: 'text-(--color-text) hover:bg-(--color-surface-2)',
+};
+
+const classes = [base, sizes[size], variants[variant], className];
+---
+
+{
+  href ? (
+    <a
+      href={href}
+      class:list={classes}
+      target={isExternal ? '_blank' : undefined}
+      rel={isExternal ? 'noopener noreferrer' : undefined}
+      {...rest}
+    >
+      <slot />
+      {isExternal && <Icon name="lucide:arrow-up-right" class="size-4" aria-hidden="true" />}
+    </a>
+  ) : (
+    <button type={type} disabled={disabled} class:list={classes} {...rest}>
+      <slot />
+    </button>
+  )
+}

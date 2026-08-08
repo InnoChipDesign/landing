@@ -1,0 +1,28 @@
+# Lab inventory backing /club/equipment (D31). A flat list — no detail pages, no search, no
+# filters, no pagination. A lab inventory is read top to bottom.
+#
+# `name` is the only thing a row needs. Everything else is optional, so an item can be listed the
+# moment somebody remembers it exists — the alternative is a page that never gets written.
+# Photo-less rows fall back to ProjectCover's stub (D21), so the page stays uniform.
+#
+# 🔴 THE REAL LIST IS STILL TO BE SUPPLIED (11-club-data.md §11, item 7). While this file is empty
+# the /club/equipment route and its nav item are NOT GENERATED AT ALL — an empty Equipment page is
+# worse than no Equipment page. Uncomment the rows below, or replace them with the real inventory,
+# and the route and nav item appear on their own.
+#
+# - id: basys-3
+#   name: Digilent Basys 3
+#   description: Artix-7 FPGA board with switches, seven-segment display and VGA out. The club's default board.
+#   link: https://digilent.com/reference/programmable-logic/basys-3/start
+#   category: FPGA boards
+#   order: 10
+#
+# - id: logic-analyzer
+#   name: Logic analyzer
+#   description: 8-channel USB logic analyzer for debugging bus timing.
+#   category: Instruments
+#   order: 20
+#   # no link, no photo — a valid entry; the stub renders
+
+[]
+

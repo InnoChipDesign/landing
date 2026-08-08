@@ -1,0 +1,96 @@
+---
+/**
+ * Club-zone header (05 §3).
+ *
+ * ⚠️ THE HEADER IS AT ITS LIMIT. Six nav items plus two service buttons plus the theme toggle is
+ * the most a single bar carries before it feels crowded, and `Equipment` (D31) is the item that
+ * got it there. If a seventh page is ever added, the fix is to demote Equipment and Resources into
+ * one `Resources` entry with Equipment as its first section link — NOT to keep adding items.
+ * Written down because "one more nav item" is a decision nobody remembers making.
+ *
+ * The wordmark links to /club, not to /. A visitor expects a logo to mean "home", and this site's
+ * home is the club — the way back to the portal is the "All sites" link at the far left.
+ */
+import { Icon } from 'astro-icon/components';
+import Container from './Container.astro';
+import Logo from './Logo.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import MobileNav from './MobileNav.astro';
+import { site } from '../../data/site';
+import { routes, isActive } from '../../lib/routes';
+import { headerNav, headerServices } from '../../lib/nav';
+
+const nav = await headerNav();
+const services = await headerServices();
+const path = Astro.url.pathname;
+---
+
+<header
+  data-site-header
+  class="sticky top-0 z-40 border-b border-transparent bg-(--color-bg)/90 backdrop-blur transition-colors duration-(--dur-base) data-[scrolled]:border-(--color-border)"
+>
+  <Container class="flex h-16 items-center gap-4">
+    <a
+      href={routes.portal()}
+      class="hidden shrink-0 items-center gap-1 text-(length:--text-meta) text-(--color-muted) transition-colors duration-(--dur-fast) hover:text-(--color-text) lg:inline-flex"
+    >
+      <Icon name="lucide:arrow-up-left" class="size-3.5" aria-hidden="true" />
+      All sites
+    </a>
+
+    <a
+      href={routes.club()}
+      class="flex shrink-0 items-center gap-2 font-(family-name:--font-display) text-lg font-semibold"
+    >
+      <Logo class="size-7 text-(--color-accent)" />
+      {site.name}
+    </a>
+
+    <nav aria-label="Club" class="ml-auto hidden items-center gap-1 lg:flex">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            aria-current={isActive(item.href, path) ? 'page' : undefined}
+            class="rounded-(--radius-sm) px-3 py-2 text-(length:--text-meta) font-medium text-(--color-muted) transition-colors duration-(--dur-fast) hover:bg-(--color-surface-2) hover:text-(--color-text) aria-[current=page]:text-(--color-text)"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    {/* Visually distinct from the nav links — outlined, with a ↗ — because they leave the site. */}
+    <div class="hidden items-center gap-2 lg:flex">
+      {
+        services.map((service) => (
+          <a
+            href={service.data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${service.data.name} — opens in a new tab`}
+            class="inline-flex min-h-9 items-center gap-1.5 rounded-(--radius-sm) border border-(--color-border) px-3 text-(length:--text-meta) font-medium transition-colors duration-(--dur-fast) hover:border-(--color-accent) hover:text-(--color-accent)"
+          >
+            {service.data.name}
+            <Icon name="lucide:arrow-up-right" class="size-3.5" aria-hidden="true" />
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="ml-auto flex items-center gap-1 lg:ml-0">
+      <ThemeToggle />
+      <MobileNav nav={nav} services={services} />
+    </div>
+  </Container>
+</header>
+
+<script>
+  // A bottom border that appears only once scrolled — no shadow at rest (05 §3).
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  if (header) {
+    const sync = () => header.toggleAttribute('data-scrolled', window.scrollY > 4);
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+  }
+</script>

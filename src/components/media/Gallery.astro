@@ -1,0 +1,62 @@
+---
+/**
+ * A responsive grid of thumbnails, each wrapped in a real <a> pointing at the committed original
+ * in `dist/originals/` (04-media.md §A4).
+ *
+ * Phase 3 adds the `Lightbox` island (Preact, `client:visible`), which intercepts the click.
+ * WITHOUT JavaScript the link still works — it just opens the original file directly. The gallery
+ * is never blank and never dead, in either state.
+ */
+import { Image } from 'astro:assets';
+import { routes } from '../../lib/routes';
+
+interface Props {
+  slug: string;
+  items: { src: ImageMetadata; alt: string; caption?: string }[];
+}
+
+const { slug, items } = Astro.props;
+
+/** The original's filename, so the link points at the byte-identical copy, not the variant. */
+function originalName(src: ImageMetadata): string {
+  return src.src.split('/').pop()?.replace(/\.[a-f0-9]{8}\./, '.') ?? '';
+}
+---
+
+{
+  items.length > 0 && (
+    <section aria-labelledby="gallery-heading" class="mt-16">
+      <h2 id="gallery-heading" class="text-(length:--text-h2) leading-(--text-h2--line-height)">
+        Gallery
+      </h2>
+      <ul class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-gallery={slug}>
+        {items.map((item) => (
+          <li>
+            <figure>
+              <a
+                href={routes.original(slug, originalName(item.src))}
+                class="block overflow-hidden rounded-(--radius-md) border border-(--color-border)"
+                data-gallery-item
+              >
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  widths={[400, 800]}
+                  sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+                  loading="lazy"
+                  decoding="async"
+                  class="aspect-[4/3] size-full object-cover"
+                />
+              </a>
+              {item.caption && (
+                <figcaption class="mt-2 text-(length:--text-meta) text-(--color-muted)">
+                  {item.caption}
+                </figcaption>
+              )}
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

@@ -1,0 +1,97 @@
+---
+/**
+ * The <head>, the tokens and the theme script. Used by BOTH zones — the portal at `/` and every
+ * `/club/*` page — so a visitor who arrives at `/club` from a link and then finds `/` via the
+ * footer never feels they have crossed into a different organisation (06 §8).
+ *
+ * It renders no navigation of its own. Chrome is PortalLayout's or ClubLayout's job.
+ */
+import '../styles/global.css';
+import { site } from '../data/site';
+import { ensureContentValid } from '../lib/validate';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Overrides the derived canonical. Only needed for a page that is served at two paths. */
+  canonical?: string;
+  /** Absolute or root-relative OG image. Falls back to the site default card. */
+  image?: string;
+  /** `website` for landing pages, `article` for a project. */
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  bodyClass?: string;
+}
+
+// Cross-file content assertions run once per build, from the one module every route passes
+// through (02 §2, src/lib/validate.ts). A malformed project fails the build here rather than
+// shipping a broken page.
+await ensureContentValid();
+
+const {
+  title,
+  description,
+  canonical,
+  image = '/og/default.png',
+  ogType = 'website',
+  noindex = false,
+  bodyClass = '',
+} = Astro.props;
+
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).href;
+const imageUrl = new URL(image, Astro.site).href;
+const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
+---
+
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#1D4ED8" />
+
+    {/* No analytics, no tracking scripts, no cookies, no consent banner (D13). */}
+
+    {/* Applies the stored theme before first paint, so there is no flash of the wrong one. This
+        script is deliberately blocking and deliberately tiny; it must run before <body> paints.
+        The `js` class is what un-hides controls that only work with JavaScript. */}
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        root.classList.add('js');
+        try {
+          const stored = localStorage.getItem('theme');
+          const dark =
+            stored === 'dark' ||
+            (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          root.classList.toggle('dark', dark);
+        } catch {
+          /* localStorage can throw in a locked-down browser; light is a fine default. */
+        }
+      })();
+    </script>
+  </head>
+
+  <body class={bodyClass}>
+    <slot />
+  </body>
+</html>

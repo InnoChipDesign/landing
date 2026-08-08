@@ -1,0 +1,55 @@
+---
+/**
+ * `/club/projects` — the directory.
+ *
+ * The COMPLETE list is server-rendered, newest first (D20/D22). With JavaScript disabled a visitor
+ * still sees every project and can navigate to any of them — a hard requirement, not a nicety
+ * (01 §4), and also what makes the page indexable.
+ *
+ * Phase 4 wraps this list in the `ProjectExplorer` island (query box, three facet groups, sort,
+ * `aria-live` count) and drops the Pagefind markup contract on the detail pages. The island
+ * enhances what is already here; it does not replace it. Until then the filter bar is absent
+ * rather than inert.
+ *
+ * `data-pagefind-ignore` keeps this index page out of the search index — Pagefind indexes the
+ * project pages, and indexing the list too would return the same content twice (03 §2).
+ */
+import ClubLayout from '../../../layouts/ClubLayout.astro';
+import Container from '../../../components/layout/Container.astro';
+import PageHeader from '../../../components/ui/PageHeader.astro';
+import ProjectRow from '../../../components/project/ProjectRow.astro';
+import EmptyState from '../../../components/ui/EmptyState.astro';
+import { publishedProjects, tagLabels } from '../../../lib/projects';
+
+const projects = await publishedProjects();
+const labels = await tagLabels();
+---
+
+<ClubLayout
+  title="Projects"
+  description="Digital hardware built by members of the Innopolis Chip Design Club — RISC-V cores, FPGA designs, memory subsystems, verification work and more."
+>
+  <div data-pagefind-ignore>
+    <PageHeader
+      title="Projects"
+      lead={`Everything the club has built and published — ${projects.length} project${projects.length === 1 ? '' : 's'}, newest first.`}
+    />
+
+    <Container class="pb-20">
+      {
+        projects.length === 0 ? (
+          <EmptyState title="No projects published yet">
+            Add one by copying <code>templates/project/</code> into{' '}
+            <code>src/content/projects/&lt;slug&gt;/</code> and opening a pull request.
+          </EmptyState>
+        ) : (
+          <ul class="border-t border-(--color-border)">
+            {projects.map((project) => (
+              <ProjectRow project={project} tagLabels={labels} />
+            ))}
+          </ul>
+        )
+      }
+    </Container>
+  </div>
+</ClubLayout>

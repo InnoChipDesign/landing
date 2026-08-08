@@ -1,0 +1,126 @@
+---
+/**
+ * `/club/about` — mission, leadership, competition record, partners.
+ *
+ * Long-form copy lives in src/content/pages/about.mdx so a non-developer can edit it without
+ * touching a component. It is currently marked 🟡 draftCopy: read 05 §13 before publishing.
+ */
+import { getEntry, getCollection, render } from 'astro:content';
+import ClubLayout from '../../layouts/ClubLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import PageHeader from '../../components/ui/PageHeader.astro';
+import Prose from '../../components/ui/Prose.astro';
+import Callout from '../../components/ui/Callout.astro';
+import ExternalLink from '../../components/ui/ExternalLink.astro';
+import { site } from '../../data/site';
+
+const page = await getEntry('pages', 'about');
+if (!page) throw new Error('src/content/pages/about.mdx is missing');
+const { Content } = await render(page);
+
+const people = await getCollection('people');
+const officers = people.filter((p) => p.data.officer);
+---
+
+<ClubLayout title={page.data.title} description={page.data.lead ?? site.pitch}>
+  <PageHeader title={page.data.title} lead={page.data.lead} />
+
+  <Container class="pb-20">
+    <Prose>
+      <Content />
+    </Prose>
+
+    {/* Leadership block only — no full-membership grid and no alumni page (D8). */}
+    {
+      officers.length > 0 && (
+        <section class="mt-16" aria-labelledby="leadership-heading">
+          <h2 id="leadership-heading" class="text-(length:--text-h2) leading-(--text-h2--line-height)">
+            Who runs it
+          </h2>
+          <ul class="mt-6 flex flex-wrap gap-4">
+            {officers.map((person) => (
+              <li class="rounded-(--radius-lg) border border-(--color-border) px-5 py-4">
+                <p class="font-medium">{person.data.name}</p>
+                {person.data.role && (
+                  <p class="text-(length:--text-meta) text-(--color-muted)">{person.data.role}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section class="mt-16" aria-labelledby="competition-heading">
+      <h2 id="competition-heading" class="text-(length:--text-h2) leading-(--text-h2--line-height)">
+        Competitions
+      </h2>
+      <p class="mt-4 max-w-(--spacing-prose) text-(--color-muted)">{site.competition.record}</p>
+      <p class="mt-4">
+        <ExternalLink href={site.competition.url}>{site.competition.name}</ExternalLink>
+      </p>
+      {/* 🔴 The structured `awards:` entries stay empty until the 2024 track, placement and team
+          are supplied (11-club-data.md §6). An unverifiable "we won prizes" line is exactly the
+          kind of claim a visiting recruiter checks. */}
+    </section>
+
+    {/* D32 — the partners row. The invitation card renders only alongside at least one real
+        partner; alone it reads as "nobody sponsors us". */}
+    {
+      site.partners.length > 0 && (
+        <section class="mt-16" aria-labelledby="partners-heading">
+          <h2 id="partners-heading" class="text-(length:--text-h2) leading-(--text-h2--line-height)">
+            Partners
+          </h2>
+          <p class="mt-4 text-(--color-muted)">{site.partnerInvite.body}</p>
+
+          <ul class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {site.partners.map((partner) => (
+              <li>
+                <div class="h-full rounded-(--radius-lg) border border-(--color-border) p-6">
+                  <h3 class="text-(length:--text-h3) leading-(--text-h3--line-height)">
+                    {partner.name}
+                  </h3>
+                  {partner.note && (
+                    <p class="mt-1 text-(length:--text-meta) text-(--color-muted)">{partner.note}</p>
+                  )}
+                  <p class="mt-4 text-(length:--text-meta)">
+                    <ExternalLink href={partner.url}>
+                      {partner.url.replace(/^https?:\/\//, '')}
+                    </ExternalLink>
+                  </p>
+                </div>
+              </li>
+            ))}
+
+            {site.partnerInvite.enabled && (
+              <li>
+                <a
+                  href={`mailto:${site.partnerInvite.mailto}`}
+                  class="flex h-full flex-col justify-center rounded-(--radius-lg) border border-dashed border-(--color-border) p-6 text-center transition-colors duration-(--dur-fast) hover:border-(--color-accent) hover:text-(--color-accent)"
+                >
+                  <span class="font-(family-name:--font-display) text-(length:--text-h3)">
+                    {site.partnerInvite.heading}
+                  </span>
+                  <span class="mt-2 text-(length:--text-meta) text-(--color-muted)">
+                    Talk to us ✉
+                  </span>
+                </a>
+              </li>
+            )}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      page.data.draftCopy && (
+        <Callout tone="warn" class="mt-16" title="Draft copy">
+          This page's text was drafted during planning and has not been approved by the club leader
+          (05 §13). Remove <code>draftCopy: true</code> from{' '}
+          <code>src/content/pages/about.mdx</code> once it has been read and corrected.
+        </Callout>
+      )
+    }
+  </Container>
+</ClubLayout>

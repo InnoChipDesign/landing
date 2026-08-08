@@ -1,0 +1,89 @@
+---
+/**
+ * `/club/contact`.
+ *
+ * The map is a clickable STATIC IMAGE, not a live embed (D27). A Yandex Maps embed would load a
+ * tracking-capable script on this page and require widening the CSP — and it would break the "zero
+ * third-party requests until a visitor clicks a video" property that holds everywhere else. The
+ * address is also printed as text, so the map is never the only way to get the information.
+ *
+ * 🔴 Overruling this is a one-component change plus a CSP `frame-src` entry (11-club-data.md §4).
+ */
+import ClubLayout from '../../layouts/ClubLayout.astro';
+import Container from '../../components/layout/Container.astro';
+import PageHeader from '../../components/ui/PageHeader.astro';
+import ExternalLink from '../../components/ui/ExternalLink.astro';
+import { site } from '../../data/site';
+
+const { address } = site.contact;
+const fullAddress = `${address.street}, ${address.locality}, ${address.region}, ${address.postalCode}`;
+---
+
+<ClubLayout
+  title="Contact"
+  description={`Get in touch with the ${site.fullName} — Telegram, email, and where to find us on campus.`}
+>
+  <PageHeader
+    title="Contact"
+    lead="Joining or a question about a session? The chat. Press or collaboration? Email."
+  />
+
+  <Container class="pb-20">
+    <div class="grid gap-12 lg:grid-cols-2">
+      <div>
+        <h2 class="text-(length:--text-h2) leading-(--text-h2--line-height)">Channels</h2>
+        <dl class="mt-6 flex flex-col gap-5">
+          <div>
+            <dt class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase">
+              Telegram
+            </dt>
+            <dd class="mt-1"><ExternalLink href={site.contact.chat}>InnoChipDesign</ExternalLink></dd>
+          </div>
+          <div>
+            <dt class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase">
+              Email
+            </dt>
+            <dd class="mt-1">
+              <a href={`mailto:${site.contact.email}`} class="text-(--color-accent) hover:underline">
+                {site.contact.email}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase">
+              GitHub
+            </dt>
+            <dd class="mt-1">
+              <ExternalLink href={site.contact.github}>InnoChipDesign</ExternalLink>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase">
+              Faculty advisor
+            </dt>
+            <dd class="mt-1">{site.advisor.name} · {site.advisor.role}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div>
+        <h2 class="text-(length:--text-h2) leading-(--text-h2--line-height)">Where to find us</h2>
+        <address class="mt-6 not-italic text-(--color-muted)">{fullAddress}</address>
+
+        {/* 🔴 The static map image is not committed yet. It belongs at
+            src/assets/images/map-innopolis.png with the building marked, and its `alt` must
+            describe the location in words. The placeholder box below holds the same space so the
+            layout does not move when it lands. */}
+        <a
+          href={site.contact.mapLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-6 flex aspect-[4/3] items-center justify-center rounded-(--radius-lg) border border-dashed border-(--color-border) bg-(--color-surface) p-6 text-center text-(length:--text-meta) text-(--color-muted) transition-colors duration-(--dur-fast) hover:border-(--color-accent) hover:text-(--color-accent)"
+        >
+          Open in Yandex Maps ↗
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>
+      </div>
+    </div>
+  </Container>
+</ClubLayout>

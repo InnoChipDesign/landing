@@ -1,0 +1,28 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  tone?: 'info' | 'warn';
+  title?: string;
+  class?: string;
+}
+
+const { tone = 'info', title, class: className = '' } = Astro.props;
+const icon = tone === 'warn' ? 'lucide:triangle-alert' : 'lucide:info';
+---
+
+<div
+  class:list={[
+    'flex gap-3 rounded-(--radius-md) border p-4 text-(length:--text-meta)',
+    tone === 'info'
+      ? 'border-(--color-accent)/25 bg-(--color-accent-soft)'
+      : 'border-(--color-warm)/40 bg-(--color-warm)/10',
+    className,
+  ]}
+>
+  <Icon name={icon} class="mt-0.5 size-4 shrink-0 text-(--color-muted)" aria-hidden="true" />
+  <div>
+    {title && <p class="font-medium">{title}</p>}
+    <div class="text-(--color-muted)"><slot /></div>
+  </div>
+</div>
