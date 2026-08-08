@@ -1,16 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
   <!--
-    🔴 PLACEHOLDER — regenerate the whole icon set from src/assets/logo.svg once the real logo
-    arrives (06-design-system.md §7). The `prefers-color-scheme` block below is the reason this
-    must be an SVG and not a JPG: one file, correct on a light and a dark browser chrome.
+    Generated from src/assets/logo.svg by `pnpm icons`. Edit the source, not this file.
+
+    No `prefers-color-scheme` block, unlike the placeholder this replaced: the mark carries its own
+    green ground, so it is legible against a light and a dark browser chrome without a variant.
   -->
-  <style>
-    :root { --mark: #1D4ED8; }
-    @media (prefers-color-scheme: dark) { :root { --mark: #6E9BFF; } }
-  </style>
-  <g fill="none" stroke="var(--mark)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="17" y="17" width="30" height="30" rx="4" />
-    <rect x="27" y="27" width="10" height="10" rx="1.5" fill="var(--mark)" stroke="none" />
-    <path d="M24 17V9M32 17V9M40 17V9M24 55v-8M32 55v-8M40 55v-8M17 24H9M17 32H9M17 40H9M55 24h-8M55 32h-8M55 40h-8" />
+  <rect width="640" height="640" fill="#40BA21" />
+  <g fill="#fff">
+    <rect x="175" y="0" width="58" height="58.908" />
+    <rect x="291" y="0" width="58" height="58.908" />
+    <rect x="408" y="0" width="58" height="58.908" />
+    <rect x="175" y="58.908" width="291" height="57.9095" />
+    <rect x="0" y="174.727" width="59" height="57.9095" />
+    <rect x="0" y="407.364" width="59" height="57.9095" />
+    <rect x="59" y="174.727" width="58" height="290.546" />
+    <rect x="581" y="174.727" width="59" height="57.9095" />
+    <rect x="581" y="407.364" width="59" height="57.9095" />
+    <rect x="523" y="174.727" width="58" height="290.546" />
+    <rect x="175" y="174.727" width="291" height="57.9095" />
+    <rect x="175" y="232.636" width="58" height="173.729" />
+    <rect x="408" y="232.636" width="58" height="173.729" />
+    <rect x="175" y="406.365" width="291" height="57.9095" />
+    <rect x="291" y="290.546" width="58" height="58.908" />
+    <rect x="175" y="523.183" width="291" height="57.9095" />
+    <rect x="408" y="523.183" width="58" height="116.817" />
   </g>
 </svg>

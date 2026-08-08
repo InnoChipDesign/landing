@@ -54,6 +54,18 @@ A person can be credited on a project by `name` alone, without an entry in `peop
 Append to `src/data/equipment.yaml`. `name` alone is a valid row. While the file is empty the
 `/club/equipment` route and its nav item are not generated at all.
 
+## Adding a figure to a project body
+
+```mdx
+import Figure from '../../../components/media/Figure.astro';
+import board from './board.jpg';
+
+<Figure src={board} alt="What the photo shows, not 'photo of…'" caption="Optional." />
+```
+
+For several images, use the `gallery` frontmatter array instead — those get the lightbox and the
+"View original" link automatically.
+
 ## Adding an event
 
 A new `.mdx` file in `src/content/events/`. Keep `draft: true` until it is a record of something
@@ -70,10 +82,11 @@ pnpm search:dev     # build once, copy the index into public/pagefind/ (git-igno
 ## Before opening a pull request
 
 ```bash
-pnpm check          # astro check + tsc, zero errors required
-pnpm test           # video parsers, route helpers
-SITE_URL=http://localhost:4321 pnpm build
+SITE_URL=http://localhost:4321 pnpm verify
 ```
+
+That runs `astro check` + `tsc`, the unit tests, a full build, and the assertions in
+`scripts/check-dist.mjs` against the output. All four have to pass.
 
 ## House rules for code
 
@@ -83,9 +96,17 @@ SITE_URL=http://localhost:4321 pnpm build
   *and* dark. A colour defined only inside `.dark` is a bug waiting to render as black-on-black.
 - **No project or equipment thumbnail outside `ProjectCover`.** That component owns the
   cover-or-stub fallback; bypassing it is how "some rows have images and some have holes" ships.
-- **There are exactly two Preact islands**, and neither exists yet. Anything interactive that is not
-  the project explorer or the lightbox should be an Astro component with a short inline script.
-  Adding a third island needs justification in the pull request.
+- **There are exactly two Preact islands**: `ProjectExplorer` and `Lightbox`. Anything interactive
+  that is not one of those should be an Astro component with a short inline script — that is what
+  the theme toggle, the mobile menu and the video facade are. Adding a third island needs
+  justification in the pull request.
+- **Neither island renders content.** The project rows and the gallery thumbnails are
+  server-rendered Astro; the islands filter, reorder and enhance them. Re-implementing a row in
+  Preact would give you two copies to keep in sync, and the copy that breaks is the one that only
+  shows up with JavaScript off.
+- **Every inline `<script>` you add changes the CSP.** It is generated from the built output
+  (`src/integrations/generate-csp.ts`), so it updates itself — but `pnpm check:dist` will tell you
+  if a script ever ends up uncovered.
 - **No club fact hardcoded in a component.** It belongs in `src/data/site.ts` or a content file.
 
 The reasoning behind all of these is in [`planning/`](planning/) — start with

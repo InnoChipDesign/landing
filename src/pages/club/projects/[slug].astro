@@ -26,6 +26,8 @@ import Gallery from '../../../components/media/Gallery.astro';
 import { routes } from '../../../lib/routes';
 import { formatTerm } from '../../../lib/format';
 import { publishedProjects, tagLabels, relatedProjects, type Project } from '../../../lib/projects';
+import * as schema from '../../../lib/seo';
+import { site } from '../../../data/site';
 
 interface Props {
   project: Project;
@@ -68,7 +70,24 @@ const hasSidebar =
   title={data.title}
   description={data.summary}
   image={routes.og(project.id)}
+  imageAlt={`${data.title} — a project by ${site.name}`}
   ogType="article"
+  updatedAt={data.updated}
+  schema={[
+    // `SoftwareSourceCode` rather than `CreativeWork` whenever the project has a repository —
+    // which, for this club, is nearly always (07 §3).
+    schema.project(
+      project,
+      Astro.site!.href,
+      new Map([...labels].map(([id, tag]) => [id, tag.label])),
+      new Map([...peopleById].map(([id, person]) => [id, person.name])),
+    ),
+    schema.video(project, Astro.site!.href),
+  ]}
+  breadcrumb={[
+    { name: 'Projects', href: routes.projects() },
+    { name: data.title, href: routes.project(project.id) },
+  ]}
 >
   <Container class="py-12">
     <a
@@ -116,11 +135,12 @@ const hasSidebar =
           </span>
         )
       }
-      {/* TODO(phase 4) — `image` meta. When a project HAS a cover this can hang off the rendered
-          <img>; when it does not, D21 requires emitting the generated stub as a data URI so
-          client-rendered results align with the server-rendered rows instead of leaving a hole.
-          Nothing consumes this meta until the ProjectExplorer island exists, so it is deliberately
-          absent rather than half-right. */}
+      {/* No `image` meta, deliberately. `03` §2 required one — as a data URI for the stub case —
+          so that client-rendered result rows would align with server-rendered ones. The explorer
+          does not render result rows: it filters the rows already in the DOM, each of which
+          already has its own thumbnail via `ProjectCover` (see ProjectExplorer.tsx). Emitting a
+          base64 stub into every project page to feed a consumer that no longer exists would add
+          weight to the HTML for nothing. */}
 
       <header class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div class="max-w-(--spacing-prose)">

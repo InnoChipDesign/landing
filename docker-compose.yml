@@ -14,6 +14,9 @@ services:
     environment:
       SITE_ADDRESS: ${SITE_ADDRESS::8080}
       AUTO_HTTPS: ${AUTO_HTTPS:-off}
+      # The CSP header NAME only (D29) — the policy is generated at build time. Defaults to
+      # report-only, and flipping to enforced is an env change and a restart, not a rebuild.
+      CSP_HEADER: ${CSP_HEADER:-Content-Security-Policy-Report-Only}
     # Stateless and read-only: no database, no volume, no writable path, nothing to back up other
     # than the git repository itself.
     read_only: true

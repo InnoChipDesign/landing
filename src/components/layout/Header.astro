@@ -42,7 +42,7 @@ const path = Astro.url.pathname;
       href={routes.club()}
       class="flex shrink-0 items-center gap-2 font-(family-name:--font-display) text-lg font-semibold"
     >
-      <Logo class="size-7 text-(--color-accent)" />
+      <Logo class="size-7" />
       {site.name}
     </a>
 
@@ -71,7 +71,7 @@ const path = Astro.url.pathname;
             aria-label={`${service.data.name} — opens in a new tab`}
             class="inline-flex min-h-9 items-center gap-1.5 rounded-(--radius-sm) border border-(--color-border) px-3 text-(length:--text-meta) font-medium transition-colors duration-(--dur-fast) hover:border-(--color-accent) hover:text-(--color-accent)"
           >
-            {service.data.name}
+            {service.data.short ?? service.data.name}
             <Icon name="lucide:arrow-up-right" class="size-3.5" aria-hidden="true" />
           </a>
         ))

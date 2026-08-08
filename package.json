@@ -15,7 +15,10 @@
     "search:dev": "pnpm build && rm -rf public/pagefind && cp -r dist/pagefind public/pagefind",
     "check": "astro check && tsc --noEmit",
     "test": "vitest run",
-    "astro": "astro"
+    "icons": "node scripts/generate-icons.mjs",
+    "astro": "astro",
+    "check:dist": "node scripts/check-dist.mjs",
+    "verify": "pnpm check && pnpm test && pnpm build && pnpm check:dist"
   },
   "dependencies": {
     "@astrojs/mdx": "7.0.5",
@@ -29,6 +32,11 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/source-serif-4": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/source-serif-4": "^5.3.0",
     "@iconify-json/lucide": "1.2.122",
     "@resvg/resvg-js": "2.6.2",
     "@tailwindcss/vite": "4.3.3",

@@ -3,12 +3,18 @@
  * A responsive grid of thumbnails, each wrapped in a real <a> pointing at the committed original
  * in `dist/originals/` (04-media.md §A4).
  *
- * Phase 3 adds the `Lightbox` island (Preact, `client:visible`), which intercepts the click.
- * WITHOUT JavaScript the link still works — it just opens the original file directly. The gallery
- * is never blank and never dead, in either state.
+ * The `Lightbox` island intercepts the click when JavaScript runs. WITHOUT JavaScript the link
+ * still works — it just opens the original file directly. The gallery is never blank and never
+ * dead, in either state, and the enhanced path is an enhancement of this DOM rather than a second
+ * implementation of it.
+ *
+ * The island mounts only when there is a gallery, so a project without one ships 0 KB of framework
+ * JavaScript (the budget in 07 §5 requires exactly that).
  */
-import { Image } from 'astro:assets';
-import { routes } from '../../lib/routes';
+import { Image, getImage } from 'astro:assets';
+
+import Lightbox, { type LightboxItem } from './Lightbox';
+import { describeOriginal } from '../../lib/originals';
 
 interface Props {
   slug: string;
@@ -17,10 +23,27 @@ interface Props {
 
 const { slug, items } = Astro.props;
 
-/** The original's filename, so the link points at the byte-identical copy, not the variant. */
-function originalName(src: ImageMetadata): string {
-  return src.src.split('/').pop()?.replace(/\.[a-f0-9]{8}\./, '.') ?? '';
-}
+// The lightbox's payload, all resolved at build time. `Math.min` matters: astro:assets does not
+// upscale, so asking for 2000px from a 746px source would hand the island a width attribute that
+// disagrees with the pixels it gets and reintroduce the layout shift the explicit dimensions are
+// there to prevent.
+const entries: LightboxItem[] = await Promise.all(
+  items.map(async (item) => {
+    const full = await getImage({
+      src: item.src,
+      width: Math.min(2000, item.src.width),
+      format: 'webp',
+    });
+    return {
+      full: full.src,
+      width: full.attributes.width ?? item.src.width,
+      height: full.attributes.height ?? item.src.height,
+      alt: item.alt,
+      caption: item.caption,
+      original: await describeOriginal(slug, item.src),
+    };
+  }),
+);
 ---
 
 {
@@ -30,13 +53,14 @@ function originalName(src: ImageMetadata): string {
         Gallery
       </h2>
       <ul class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-gallery={slug}>
-        {items.map((item) => (
+        {items.map((item, i) => (
           <li>
             <figure>
               <a
-                href={routes.original(slug, originalName(item.src))}
+                href={entries[i]!.original.href}
                 class="block overflow-hidden rounded-(--radius-md) border border-(--color-border)"
                 data-gallery-item
+                data-index={i}
               >
                 <Image
                   src={item.src}
@@ -57,6 +81,8 @@ function originalName(src: ImageMetadata): string {
           </li>
         ))}
       </ul>
+
+      <Lightbox client:idle slug={slug} items={entries} />
     </section>
   )
 }

@@ -1,0 +1,51 @@
+---
+/**
+ * A single image with an optional caption (04-media.md §A4).
+ *
+ * Uses `<Picture>` rather than `<Image>` so the browser gets a real AVIF → WebP → source-format
+ * ladder and picks the first it understands. `<Image>` emits one format; on a page whose whole
+ * point is photographs of hardware, the ~30% AVIF saves is worth the extra `<source>`.
+ *
+ * Available to MDX bodies. A project author writes:
+ *
+ *     import Figure from '../../../components/media/Figure.astro';
+ *     import board from './board.jpg';
+ *     <Figure src={board} alt="…" caption="…" />
+ *
+ * `alt` is required and not optional-with-a-default, deliberately: a decorative image inside a
+ * project write-up is almost always a mistake, and `alt=""` should be a thing someone types on
+ * purpose.
+ */
+import { Picture } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  /** Full prose width by default; `wide` breaks out of the measure for a diagram. */
+  width?: 'prose' | 'wide';
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const { src, alt, caption, width = 'prose', loading = 'lazy', class: className = '' } = Astro.props;
+---
+
+<figure class:list={['not-prose my-8', width === 'wide' && 'lg:-mx-16', className]}>
+  <Picture
+    src={src}
+    alt={alt}
+    formats={['avif', 'webp']}
+    widths={[400, 800, 1200, 1600]}
+    sizes={width === 'wide' ? '(min-width: 1024px) 900px, 100vw' : '(min-width: 768px) 68ch, 100vw'}
+    loading={loading}
+    decoding="async"
+    fetchpriority={loading === 'eager' ? 'high' : undefined}
+    class="h-auto w-full rounded-(--radius-md) border border-(--color-border)"
+  />
+  {
+    caption && (
+      <figcaption class="mt-2 text-(length:--text-meta) text-(--color-muted)">{caption}</figcaption>
+    )
+  }
+</figure>

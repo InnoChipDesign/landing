@@ -8,7 +8,18 @@ import type { APIRoute } from 'astro';
 export const GET: APIRoute = ({ site }) => {
   const sitemap = new URL('sitemap-index.xml', site).href;
   return new Response(
-    ['User-agent: *', 'Allow: /', 'Disallow: /styleguide', '', `Sitemap: ${sitemap}`, ''].join('\n'),
+    [
+      'User-agent: *',
+      'Allow: /',
+      // The full-resolution committed originals (D9). They are meant to be LINKED — the lightbox's
+      // "View original" is the permanent URL for an image (D28) — but not crawled: they are
+      // multi-megabyte files whose optimized variants are already indexed from the page.
+      'Disallow: /originals/',
+      'Disallow: /styleguide',
+      '',
+      `Sitemap: ${sitemap}`,
+      '',
+    ].join('\n'),
     { headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
   );
 };

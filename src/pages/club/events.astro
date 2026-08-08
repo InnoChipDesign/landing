@@ -19,6 +19,8 @@ import EmptyState from '../../components/ui/EmptyState.astro';
 import { Icon } from 'astro-icon/components';
 import { site } from '../../data/site';
 import { formatDateRange } from '../../lib/format';
+import * as schema from '../../lib/seo';
+import { routes } from '../../lib/routes';
 
 const events = (await getCollection('events', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
@@ -34,6 +36,8 @@ for (const event of events) {
 <ClubLayout
   title="Events"
   description={`Meetings, workshops and competitions. ${site.meetings.recurrence} ${site.meetings.season}.`}
+  schema={schema.events(events, Astro.site!.href)}
+  breadcrumb={[{ name: 'Events', href: routes.events() }]}
 >
   <PageHeader title="Events">
     <p class="mt-4 max-w-(--spacing-prose) text-(length:--text-lead) text-(--color-muted)">

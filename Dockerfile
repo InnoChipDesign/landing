@@ -29,6 +29,9 @@ ARG SITE_URL
 LABEL org.opencontainers.image.source="https://github.com/InnoChipDesign" \
       site.url="${SITE_URL}"
 COPY --from=build /app/dist /srv
+# The generated CSP (D29). `pnpm build` writes it beside dist/, NOT inside it — a policy served as
+# a static file at /csp.caddy would be both useless and embarrassing. Caddyfile imports it.
+COPY --from=build /app/csp.caddy /etc/caddy/csp.caddy
 COPY Caddyfile /etc/caddy/Caddyfile
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s \

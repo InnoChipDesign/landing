@@ -6,8 +6,10 @@
  *
  * It renders no navigation of its own. Chrome is PortalLayout's or ClubLayout's job.
  */
+import { Font } from 'astro:assets';
+
 import '../styles/global.css';
-import { site } from '../data/site';
+import Seo from '../components/seo/Seo.astro';
 import { ensureContentValid } from '../lib/validate';
 
 interface Props {
@@ -17,9 +19,14 @@ interface Props {
   canonical?: string;
   /** Absolute or root-relative OG image. Falls back to the site default card. */
   image?: string;
+  imageAlt?: string;
   /** `website` for landing pages, `article` for a project. */
   ogType?: 'website' | 'article';
   noindex?: boolean;
+  publishedAt?: Date;
+  updatedAt?: Date;
+  /** Structured data for this page, built by `src/lib/seo.ts`. */
+  jsonLd?: string;
   bodyClass?: string;
 }
 
@@ -28,19 +35,7 @@ interface Props {
 // shipping a broken page.
 await ensureContentValid();
 
-const {
-  title,
-  description,
-  canonical,
-  image = '/og/default.png',
-  ogType = 'website',
-  noindex = false,
-  bodyClass = '',
-} = Astro.props;
-
-const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).href;
-const imageUrl = new URL(image, Astro.site).href;
-const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
+const { bodyClass = '', ...seo } = Astro.props;
 ---
 
 <!doctype html>
@@ -49,25 +44,25 @@ const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>{fullTitle}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalUrl} />
-    {noindex && <meta name="robots" content="noindex, follow" />}
+    <Seo {...seo} type={seo.ogType} />
 
-    <meta property="og:type" content={ogType} />
-    <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:image" content={imageUrl} />
-    <meta property="og:site_name" content={site.name} />
-    <meta property="og:locale" content="en" />
-    <meta name="twitter:card" content="summary_large_image" />
+    {/* Emits the @font-face rules and the `--font-*-face` variables global.css consumes.
+        `preload` on the two families used above the fold on every page; the mono face is only
+        reached by code blocks and tag chips, so preloading it would compete with the LCP image
+        for bandwidth it does not need. */}
+    <Font cssVariable="--font-display-face" preload />
+    <Font cssVariable="--font-sans-face" preload />
+    <Font cssVariable="--font-mono-face" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#1D4ED8" />
+    {/* Matches --color-bg in each theme, not the brand green. The browser paints this behind its
+        own chrome, directly adjacent to the page — a green bar above a white page reads as a
+        rendering seam. Two tags, because this one meta cannot reference a CSS variable. */}
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)" />
 
     {/* No analytics, no tracking scripts, no cookies, no consent banner (D13). */}
 

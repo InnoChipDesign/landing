@@ -1,6 +1,8 @@
 # build output
 dist/
 .astro/
+# generated server config, written beside dist/ by the generate-csp integration
+csp.caddy
 
 # dependencies
 node_modules/

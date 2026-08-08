@@ -29,6 +29,8 @@ const { data } = project;
 <li
   class="content-auto border-b border-(--color-border) last:border-b-0"
   data-project
+  data-slug={project.id}
+  data-title={data.title}
   data-tags={data.tags.join(' ')}
   data-year={data.year}
   data-semester={data.semester ?? ''}

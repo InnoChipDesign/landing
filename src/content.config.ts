@@ -176,6 +176,13 @@ const services = defineCollection({
     z.object({
       id: ID,
       name: z.string(),
+      /**
+       * Header-button label, when the full name is too long for a bar that is already at its
+       * limit (see Header.astro). Everywhere with room — the portal tile, /club/resources — uses
+       * `name`, because "VCD" tells a first-time visitor nothing and "Visual Circuit Designer"
+       * tells them everything. Capped so it cannot quietly become a second name.
+       */
+      short: z.string().max(8).optional(),
       tagline: z.string().max(80).optional(),
       url: z.string(),
       kind: z.enum(['internal', 'external']),

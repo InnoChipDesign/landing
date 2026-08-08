@@ -10,7 +10,8 @@
  * any slot, and picks up theme tokens so it is correct in dark mode without a second asset.
  */
 import { Image } from 'astro:assets';
-import Logo from '../layout/Logo.astro';
+// The monochrome reduction, not the green mark — see LogoGlyph's header for why.
+import LogoGlyph from '../layout/LogoGlyph.astro';
 
 interface Props {
   /** Used to derive the stub's tint. Stable across builds. */
@@ -77,7 +78,7 @@ const wrapper = [
         aria-hidden="true"
         data-stub
       >
-        <Logo class="size-8 opacity-80" />
+        <LogoGlyph class="size-8 opacity-70" />
         <span class="line-clamp-2 font-(family-name:--font-display) text-[0.8125rem] leading-tight">
           {title}
         </span>

@@ -18,8 +18,13 @@ import Stat from '../components/ui/Stat.astro';
 import EmptyState from '../components/ui/EmptyState.astro';
 import ExternalLink from '../components/ui/ExternalLink.astro';
 import ProjectCover from '../components/project/ProjectCover.astro';
+import VideoFacade from '../components/media/VideoFacade.astro';
+import Figure from '../components/media/Figure.astro';
 import { getCollection } from 'astro:content';
 import { STATUS_LABELS } from '../lib/format';
+
+// Borrowed from a real project rather than committing a second copy of an image just for this page.
+import sampleImage from '../content/projects/multibank-memory/architecture.png';
 
 const tags = await getCollection('tags');
 const statuses = Object.keys(STATUS_LABELS) as (keyof typeof STATUS_LABELS)[];
@@ -115,6 +120,43 @@ const stubSlugs = ['school-riscv', 'simple-cache', 'guitar-processor', 'edge-det
       <p class="mt-6">
         An <ExternalLink href="https://example.com">external link</ExternalLink> inside a sentence.
       </p>
+    </section>
+
+    <section>
+      <h2 class="text-(length:--text-h2)">Video facade</h2>
+      <p class="mt-2 max-w-(--spacing-prose) text-(--color-muted)">
+        This is here because <strong>no seeded project has a video yet</strong>, so without it the
+        component that carries the site's most important privacy property (D10 — zero third-party
+        requests until a click) would render on no page at all and could rot unnoticed. Delete this
+        block once a real project has a demo.
+      </p>
+      <p class="mt-2 max-w-(--spacing-prose) text-(length:--text-meta) text-(--color-muted)">
+        Check three things: with JavaScript off the play button is a plain link to the provider;
+        with it on, clicking swaps in the iframe with <em>no</em> layout shift; and the network tab
+        shows nothing reaching YouTube until that click. The poster falls back through
+        videoPoster → cover → stub, and this one has neither of the first two.
+      </p>
+      <div class="mt-6 max-w-2xl">
+        <VideoFacade
+          url="https://youtu.be/8hFwuGJs9DI"
+          title="River Raid on FPGA — a 2016 Innopolis student project, used here as a fixture"
+          slug="styleguide-demo"
+          projectTitle="Video facade fixture"
+        />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-(length:--text-h2)">Figure</h2>
+      <p class="mt-2 max-w-(--spacing-prose) text-(--color-muted)">
+        For use inside a project body. AVIF → WebP → source-format ladder, explicit dimensions, and
+        a caption that is a real <code>figcaption</code>.
+      </p>
+      <Figure
+        src={sampleImage}
+        alt="Block diagram of a multi-bank memory: two read ports and one write port routed through decoders to two banks."
+        caption="A figure with a caption, at prose width."
+      />
     </section>
   </Container>
 </ClubLayout>

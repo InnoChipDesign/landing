@@ -9,6 +9,7 @@
  */
 import BaseLayout from './BaseLayout.astro';
 import SkipLink from '../components/layout/SkipLink.astro';
+import { graph, organization, website } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -17,9 +18,15 @@ interface Props {
 }
 
 const props = Astro.props;
+
+// `WebSite` belongs on `/` and nowhere else (07 §1) — the portal is this site's homepage as far as
+// a crawler is concerned, even though the content lives under /club. `Organization` goes on both
+// zones, so the two never look like two different clubs.
+const origin = Astro.site!.href;
+const jsonLd = graph([organization(origin), website(origin)]);
 ---
 
-<BaseLayout {...props} bodyClass="flex min-h-dvh flex-col">
+<BaseLayout {...props} jsonLd={jsonLd} bodyClass="flex min-h-dvh flex-col">
   <SkipLink />
   <main id="main" class="flex flex-1 flex-col justify-center">
     <slot />

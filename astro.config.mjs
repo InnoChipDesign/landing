@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 
 import mdx from '@astrojs/mdx';
 import preact from '@astrojs/preact';
@@ -8,6 +8,7 @@ import icon from 'astro-icon';
 import tailwindcss from '@tailwindcss/vite';
 
 import copyOriginals from './src/integrations/copy-originals.ts';
+import generateCsp from './src/integrations/generate-csp.ts';
 
 // `site` is baked into every canonical tag, sitemap entry, OG URL and JSON-LD block at BUILD time
 // (08-deployment.md §2). There is deliberately no production default: an accidental default is
@@ -47,6 +48,7 @@ export default defineConfig({
     // inlined as SVG. Never an icon font, never a runtime CDN fetch (06 §7).
     icon(),
     copyOriginals(),
+    generateCsp(),
   ],
 
   vite: {
@@ -77,9 +79,65 @@ export default defineConfig({
     },
   },
 
-  // TODO(phase 1) — Fonts API, `local` provider. Blocked on the three variable woff2 files being
-  // committed to src/assets/fonts/ (01-architecture.md §1, 06-design-system.md §2). Until then
-  // global.css falls back through the same family stacks. Do NOT switch to the `google` provider:
-  // the Docker build must not depend on reaching Google's servers.
-  // fonts: [ … ],
+  // The three families from 06-design-system.md §2, self-hosted.
+  //
+  // `local`, with the woff2 files resolved out of the installed @fontsource-variable packages,
+  // rather than the `google`/`fontsource` remote providers. The remote providers would make
+  // `docker compose build` depend on reaching a third party — the property this whole site is
+  // built around (07 §6: zero third-party requests, and a build that works on a machine that
+  // cannot reach the open internet). npm packages are already pinned in the lockfile, so this is
+  // reproducible in a way a network fetch is not, and it keeps ~700 KB of binaries out of git
+  // history where they would be permanent.
+  //
+  // One variable file per family covers the whole weight range, so `weights: ['400 700']` costs
+  // one download, not four. Latin subset only (D3 — the site is English-only).
+  fonts: [
+    {
+      provider: fontProviders.local(),
+      name: 'Source Serif 4 Variable',
+      cssVariable: '--font-display-face',
+      fallbacks: ['Georgia', 'Times New Roman', 'serif'],
+      options: {
+        variants: [
+          {
+            src: ['@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2'],
+            weight: '200 900',
+            style: 'normal',
+          },
+        ],
+      },
+    },
+    {
+      provider: fontProviders.local(),
+      name: 'Inter Variable',
+      cssVariable: '--font-sans-face',
+      fallbacks: ['system-ui', 'sans-serif'],
+      options: {
+        variants: [
+          {
+            src: ['@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'],
+            weight: '100 900',
+            style: 'normal',
+          },
+        ],
+      },
+    },
+    {
+      provider: fontProviders.local(),
+      name: 'JetBrains Mono Variable',
+      cssVariable: '--font-mono-face',
+      fallbacks: ['ui-monospace', 'monospace'],
+      options: {
+        variants: [
+          {
+            src: [
+              '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2',
+            ],
+            weight: '100 800',
+            style: 'normal',
+          },
+        ],
+      },
+    },
+  ],
 });

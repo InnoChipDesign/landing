@@ -22,11 +22,13 @@
   inHeader: false # it IS the site; no self-link button
 
 - id: vcd
-  name: VCD
-  # 🔴 PLACEHOLDER — 11-club-data.md §3. The leader answered "no other info needed", but this is the
-  # only string a portal visitor reads before deciding to click. One real sentence, ≤ 60 chars.
-  # If one cannot be supplied, DELETE the tagline field and the card renders as a name-only tile.
-  tagline: Waveform viewer for lab work.
+  name: Visual Circuit Designer
+  short: VCD
+  tagline: Design, simulate and compile circuits, interactively.
+  # 🔴 PLACEHOLDER URL — this address is invented and does not currently resolve. The taglines and
+  # names above came from the club leader; the URLs did not. Both services need their real address
+  # before launch, and `astro build` cannot catch a wrong one — an external URL is a string, so a
+  # typo here ships as a dead card on the site's front page.
   url: https://vcd.innochipdesign.ru
   kind: external
   status: live
@@ -34,9 +36,10 @@
   inHeader: true
 
 - id: hw
-  name: HW
-  # 🔴 PLACEHOLDER — same as above.
-  tagline: Homework submission and grading.
+  name: Homework
+  short: HW
+  tagline: Verilog practice with submission and automatic grading.
+  # 🔴 PLACEHOLDER URL — see above.
   url: https://homework.innochipdesign.ru
   kind: external
   status: live

@@ -1,0 +1,84 @@
+---
+title: SchoolRV32I — finishing a teaching RISC-V core
+summary: A continuation of schoolRISCV that fills in the instructions the teaching core never had, with Icarus and Verilator simulation, Yosys synthesis and three FPGA board targets in one tree.
+year: 2025
+semester: summer
+status: in-progress
+tags: [riscv, cpu, fpga]
+featured: true
+team:
+  - { name: unaimillan, role: RTL }
+  - { name: LemonLord616, role: RTL }
+  - { person: m-kuskov, role: Instructor }
+stack: [SystemVerilog, Icarus Verilog, Verilator, Yosys, Quartus Prime, RARS]
+hardware: [Terasic DE10-Lite, Zeowaa, RZRD]
+links:
+  repo: https://github.com/InnoChipDesign/project-schoolrv32i
+  docs: https://github.com/InnoChipDesign/project-schoolrv32i/blob/master/docs/rv32-instruction-listing.md
+---
+
+{/*
+  🟡 Written from the repository, not from an interview with the team. Everything below is
+  checkable against the tree at the `repo` link above. Two things a team member should confirm:
+  the `semester: summer` attribution (inferred from the commit range, 22 Jul – 4 Aug 2025), and
+  whether the load/store work has landed since — if it has, the status moves to `completed` and
+  the paragraph under "Where it stands" is stale.
+*/}
+
+## The problem
+
+[schoolRISCV](https://github.com/zhelnio/schoolRISCV) is a teaching core: a single-cycle RISC-V CPU
+small enough that a student can read the whole datapath in an afternoon. That is exactly what makes
+it a good starting point and exactly what makes it incomplete — it implements enough of RV32I to run
+the examples, not enough to run arbitrary compiled code.
+
+SchoolRV32I picks the core up and works towards the full RV32I base integer set, keeping the
+property that made the original useful: every module still fits on a screen.
+
+## How it works
+
+The datapath is split the way the original was — `sr_decode`, `sr_control`, `sr_alu`,
+`sr_register_file` — with two modules added for the work this project is about: `sr_lsu`, the
+load/store unit, and `sr_mdu`, the multiply/divide unit for the RV32M extension.
+
+```system-verilog
+module sr_alu
+(
+    input  [31:0] srcA,
+    input  [31:0] srcB,
+    input  [ 2:0] oper,
+    output        zero,
+    output [31:0] result
+);
+```
+
+Three things in the repository are worth more attention than the RTL itself, because they are what
+make the core usable by the next student rather than only by its authors:
+
+- **Two simulators, not one.** `sim/icarus/tb.sv` and a Verilator harness in
+  `sim/verilator/simulate.cpp`. Icarus is the one that installs everywhere; Verilator is the one
+  fast enough to run a real program to completion.
+- **Programs are assembled, not hand-encoded.** `make gen-asm` drives the
+  [RARS](https://github.com/TheThirdOne/rars) simulator in batch mode to assemble `rtl/program.s`
+  and dump `.text` as hex. Writing a test means writing assembly.
+- **Three board targets from one RTL tree.** `synth/fpga/` carries the pin constraints and a
+  board-specific top level for the DE10-Lite, RZRD and Zeowaa boards, plus a Yosys flow in
+  `synth/yosys/` for synthesis and static timing without a vendor toolchain.
+
+## Where it stands
+
+The repository tracks completion instruction by instruction in
+`docs/rv32-instruction-listing.md`, which is a better project status than any sentence here:
+
+- **Done** — `LUI`, `AUIPC`, `JAL`, `JALR`, all six branches, every immediate and register-register
+  ALU operation.
+- **In progress** — the load and store family: `LB`, `LH`, `LW`, `LBU`, `LHU`, `SB`, `SH`, `SW`.
+  This is what `sr_lsu` exists for and it is the reason the project is not yet marked completed.
+- **Out of scope** — `FENCE`, `ECALL`, `EBREAK` and the CSR instructions. A teaching core with no
+  operating system and no interrupt controller has nothing to do with them.
+
+## What's next
+
+Closing out the load/store set finishes RV32I. After that the interesting question is not "which
+instruction is missing" but "how fast can this go" — the single-cycle datapath is a deliberate
+teaching choice, and pipelining it is the natural follow-on project for whoever picks this up.

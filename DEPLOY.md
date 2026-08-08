@@ -100,8 +100,39 @@ first-build failure and it is a one-line fix.
 
 ## After a week: turn on the CSP
 
-The Content-Security-Policy is not yet written (phase 7). When it is, ship it as
-`Content-Security-Policy-Report-Only` first, check the browser console on `/`, `/club`, a project
-page with a video (click play), a project page with a gallery, and `/club/contact`, and only then
-rename the header. Enforcing it on day one means a single missed hash silently breaks the theme
-toggle or blanks every video, with a console error most visitors never report.
+The Content-Security-Policy **is** shipped, but as `Content-Security-Policy-Report-Only` (D29). In
+report-only mode the browser reports violations instead of blocking them, which converts a possible
+outage into a log line.
+
+It is generated at build time by `src/integrations/generate-csp.ts` from the built output itself —
+the sha256 of every inline script that actually shipped, and a `frame-src` containing exactly the
+video hosts the published pages reference (`'none'` when there are none). You never edit it, and it
+cannot drift from the HTML. The build writes it to `csp.caddy` beside `dist/`, and the Dockerfile
+copies it to `/etc/caddy/csp.caddy`, outside the web root.
+
+To enforce it, open the browser console on `/`, `/club`, a project page with a video (click play), a
+project page with a gallery (open the lightbox), and `/club/contact`. With zero violations on all
+five, add to `.env`:
+
+```
+CSP_HEADER=Content-Security-Policy
+```
+
+and `docker compose up -d`. No rebuild — the header name is read at runtime.
+
+## Verifying a deploy
+
+```bash
+curl -sI https://<domain>/club | grep -iE 'content-security|cache-control'
+curl -s  https://<domain>/robots.txt
+```
+
+Expect `must-revalidate` on pages, `immutable` on `/_astro/*`, and a sitemap URL carrying the real
+domain. Two failure modes worth checking explicitly, because both were real bugs during the build
+and neither is visible from the page itself:
+
+- **Pages must return 200, not 308.** `trailingSlash: 'never'` means every canonical points at
+  `/club` with no slash; the Caddyfile's `try_files` is what stops Caddy redirecting to `/club/`.
+- **Pages must carry a `Cache-Control` header.** An earlier Caddyfile matched on the response
+  `Content-Type`, which is not a thing Caddy's `header` directive can do, so pages shipped with
+  none at all.
