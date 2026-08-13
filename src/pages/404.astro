@@ -1,39 +1,30 @@
 ---
 /**
- * Caddy serves this on any miss, in EITHER zone (05 §12) — a bad path under `/club/` and a bad
- * path at the root both land here. So every link on it is root-absolute, and the chrome it uses
- * has to make sense from both.
+ * Two exits, not one. A 404 that only offers the portal is a dead end for someone who mistyped a
+ * club URL — they wanted a page on the club site, so send them there as well as to the switchboard.
  */
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Container from '../components/layout/Container.astro';
-import Logo from '../components/layout/Logo.astro';
-import Button from '../components/ui/Button.astro';
-import { site } from '../data/site';
-import { routes } from '../lib/routes';
+import Layout from '~/layouts/Layout.astro';
+
+const title = 'Page not found';
 ---
 
-<BaseLayout
-  title="Page not found"
-  description="That page doesn't exist."
-  noindex
-  bodyClass="flex min-h-dvh flex-col"
->
-  <main id="main" class="flex flex-1 items-center">
-    <Container class="py-24 text-center">
-      <Logo class="mx-auto size-10" />
-      <p class="mt-6 font-(family-name:--font-mono) text-(--color-muted)">404</p>
-      <h1 class="mt-2 text-(length:--text-display) leading-(--text-display--line-height)">
-        Nothing at this address
-      </h1>
-      <p class="mx-auto mt-4 max-w-md text-(length:--text-lead) text-(--color-muted)">
-        The page may have moved, or the link may be wrong. A project URL never changes once
-        published, so an old project link should still work.
-      </p>
-      <div class="mt-8 flex flex-wrap justify-center gap-3">
-        <Button href={routes.club()}>Club home</Button>
-        <Button href={routes.projects()} variant="secondary">Projects</Button>
-        <Button href={routes.portal()} variant="ghost">All {site.name} sites</Button>
+<Layout metadata={{ title }}>
+  <section class="flex h-full items-center p-16">
+    <div class="container mx-auto my-8 flex flex-col items-center justify-center px-5">
+      <div class="max-w-md text-center">
+        <h1 class="mb-8 text-8xl font-bold">
+          <span class="sr-only">Error</span>
+          <span class="text-primary">404</span>
+        </h1>
+        <p class="text-2xl font-semibold md:text-3xl">We couldn't find that page.</p>
+        <p class="mt-4 mb-8 text-lg text-muted">
+          It may have moved, or the link may be wrong. Both ways back are below.
+        </p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <a href="/club" class="btn-primary">Go to the club site</a>
+          <a href="/" class="btn">All properties</a>
+        </div>
       </div>
-    </Container>
-  </main>
-</BaseLayout>
+    </div>
+  </section>
+</Layout>

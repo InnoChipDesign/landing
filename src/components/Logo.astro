@@ -1,0 +1,17 @@
+---
+import { Image } from 'astro:assets';
+import logo from '~/assets/logo.svg';
+import { site } from '~/data/site';
+---
+
+{
+  /* The mark is a reversed green field — the colour IS the logo — so it is never recoloured to
+    currentColor and needs no dark-mode variant.
+
+    Only Header uses this, and Header only exists in the club zone, so the wordmark is the club's
+    name, not the umbrella brand. The portal renders the mark itself and `site.name` beside it. */
+}
+<Image src={logo} alt="" width={28} height={28} class="size-7 shrink-0 rounded-[5px]" aria-hidden="true" />
+<span class="ml-2 self-center text-xl font-bold whitespace-nowrap text-default rtl:mr-2 rtl:ml-0">
+  {site.clubName}
+</span>

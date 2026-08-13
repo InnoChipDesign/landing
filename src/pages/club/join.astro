@@ -1,113 +1,103 @@
 ---
 /**
- * `/club/join` (D18).
+ * `/club/join` — the page it matters most to get right.
  *
- * The primary CTA points at a THIRD PARTY's program application — YADRO's Chip Design School — not
- * at a club membership form. The explanatory note below is not decoration: without it, a visitor
- * who wanted to join the club on Saturday lands on an unrelated school signup and bounces. It is
- * driven by `site.join.formIsThirdParty`, so supplying a club-specific form removes the note by
- * changing one flag.
+ * The load-bearing part is the Note: the primary call to action points at YADRO's Chip Design
+ * School, a third party's programme, NOT a club membership form. Drop that framing and a visitor
+ * who wanted to join the club on Saturday lands on an unrelated school signup and is confused.
+ *
+ * "Just come on Saturday" is deliberate and should survive editing: a form as the only path filters
+ * out exactly the shy first-years a student club most wants to reach.
  */
-import { getEntry, render } from 'astro:content';
-import ClubLayout from '../../layouts/ClubLayout.astro';
-import Container from '../../components/layout/Container.astro';
-import PageHeader from '../../components/ui/PageHeader.astro';
-import Prose from '../../components/ui/Prose.astro';
-import Button from '../../components/ui/Button.astro';
-import Callout from '../../components/ui/Callout.astro';
-import { site } from '../../data/site';
+import PageLayout from '~/layouts/PageLayout.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
+import Note from '~/components/widgets/Note.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
 
-const page = await getEntry('pages', 'join');
-if (!page) throw new Error('src/content/pages/join.mdx is missing');
-const { Content } = await render(page);
+import { site } from '~/data/site';
 
-// 🟡 Draft FAQ. Plain <details>, so it needs no framework (05 §10).
-const faq = [
-  {
-    q: 'Do I need to know Verilog?',
-    a: 'No. The Saturday sessions start from logic design, and most members write their first RTL at the club.',
-  },
-  {
-    q: 'Do I need my own board?',
-    a: 'No. The lab has FPGA boards you can borrow for a project.',
-  },
-  {
-    q: 'Can I join mid-semester?',
-    a: 'Yes. Come to a session and pick up from there; the chat has what you missed.',
-  },
-  {
-    q: 'Which year can join?',
-    a: 'Any. The club is open to all Innopolis University students.',
-  },
-  {
-    q: 'Is it graded, or for credit?',
-    a: 'No. It is a student community, not a course.',
-  },
-  {
-    q: 'Can I bring my own project?',
-    a: 'Yes — that is the point. Finished projects get published on this site.',
-  },
-];
+const metadata = {
+  title: 'Join the club',
+  description: 'Everyone is welcome. No selection, no prior experience, and no application required to show up.',
+};
 ---
 
-<ClubLayout title={page.data.title} description={page.data.lead ?? site.pitch}>
-  <PageHeader title={page.data.title} lead={page.data.lead} />
+<PageLayout metadata={metadata}>
+  <HeroText tagline="Join">
+    <Fragment slot="title">Join the club</Fragment>
+    <Fragment slot="subtitle">
+      Everyone is welcome. There is no selection process and no prior experience required — several current members
+      started by turning up.
+    </Fragment>
+  </HeroText>
 
-  <Container class="pb-20">
-    <Prose>
-      <Content />
-    </Prose>
+  <Note
+    icon="tabler:info-circle"
+    title="Before you click step 1:"
+    description="The Chip Design School is a free course run by YADRO with MIET, MFTI and ITMO — not a club application. Our Saturday sessions follow its curriculum, which is why we point you at it. Joining the club itself takes no form at all."
+  />
 
-    <div class="mt-8 flex flex-wrap gap-3">
-      <Button href={site.join.formUrl}>{site.join.formLabel}</Button>
-      <Button href={site.join.chatUrl} variant="secondary">Open the Telegram chat</Button>
-    </div>
+  <Steps
+    title="How it works"
+    items={[
+      {
+        title: site.join.formLabel,
+        description:
+          'The free YADRO/MIET course our Saturday sessions follow. Opens on their site — it is their programme, not ours.',
+        icon: 'tabler:external-link',
+      },
+      {
+        title: 'Join the Telegram chat',
+        description: 'Where the room and the week&rsquo;s topic are posted before each session.',
+        icon: 'tabler:brand-telegram',
+      },
+      {
+        title: 'Just come on Saturday',
+        description: `${site.meetings.recurrence} ${site.meetings.season}. No application is required to show up.`,
+        icon: 'tabler:door-enter',
+      },
+    ]}
+  />
 
-    {
-      site.join.formIsThirdParty && (
-        <Callout class="mt-6" title="About that first link">
-          The Chip Design School is a free two-semester course run by YADRO with MIET, MFTI and ITMO
-          teaching staff — not a club membership form. Our Saturday sessions follow its curriculum.
-          You do not have to sign up for it to come to the club.
-        </Callout>
-      )
-    }
+  <Features2
+    title="What you'll do"
+    columns={3}
+    items={[
+      {
+        title: 'Write RTL that runs',
+        description: 'Digital design on real FPGA hardware, not only in simulation.',
+        icon: 'tabler:code',
+      },
+      {
+        title: 'Build something of your own',
+        description: 'A project you choose, published here and on GitHub.',
+        icon: 'tabler:tools',
+      },
+      {
+        title: 'Compete, if you want to',
+        description: `Work toward the ${site.competition.name}. Entirely optional.`,
+        icon: 'tabler:trophy',
+      },
+    ]}
+  />
 
-    <p class="mt-10 max-w-(--spacing-prose) text-(--color-muted)">
-      {site.meetings.recurrence} {site.meetings.season}. {site.meetings.locationNote}
-    </p>
-
-    <section class="mt-16" aria-labelledby="faq-heading">
-      <h2 id="faq-heading" class="text-(length:--text-h2) leading-(--text-h2--line-height)">
-        Questions
-      </h2>
-      <div class="mt-6 max-w-(--spacing-prose) border-t border-(--color-border)">
-        {
-          faq.map((item) => (
-            <details class="group border-b border-(--color-border) py-4">
-              <summary class="cursor-pointer list-none font-medium marker:content-none">
-                <span class="inline-flex w-full items-center justify-between gap-4">
-                  {item.q}
-                  <span class="text-(--color-muted) transition-transform group-open:rotate-45" aria-hidden="true">
-                    +
-                  </span>
-                </span>
-              </summary>
-              <p class="mt-3 text-(--color-muted)">{item.a}</p>
-            </details>
-          ))
-        }
-      </div>
-    </section>
-
-    {
-      page.data.draftCopy && (
-        <Callout tone="warn" class="mt-16" title="Draft copy">
-          This page's text and the FAQ answers were drafted during planning and have not been
-          approved by the club leader (11-club-data.md §5, item 6). Remove{' '}
-          <code>draftCopy: true</code> from <code>src/content/pages/join.mdx</code> once they have.
-        </Callout>
-      )
-    }
-  </Container>
-</ClubLayout>
+  <CallToAction
+    actions={[
+      {
+        variant: 'primary',
+        text: site.join.formLabel,
+        href: site.join.formUrl,
+        target: '_blank',
+        icon: 'tabler:external-link',
+      },
+      { text: 'Ask in Telegram', href: site.join.chatUrl, target: '_blank', icon: 'tabler:brand-telegram' },
+    ]}
+  >
+    <Fragment slot="title">Still not sure?</Fragment>
+    <Fragment slot="subtitle">
+      Ask in the chat, or simply turn up on a Saturday and see what we are working on.
+    </Fragment>
+  </CallToAction>
+</PageLayout>

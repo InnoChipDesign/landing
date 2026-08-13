@@ -1,0 +1,54 @@
+site:
+  name: InnoChipDesign
+  # 🔴 UNRESOLVED: the canonical domain has not been decided. Two were proposed —
+  # www.innochipdesign.ru (public, memorable, matches the brand) and
+  # innochipdesign.campus.innopolis.university (the campus host). One must 301 to the other;
+  # serving the same HTML on both splits any search ranking between them.
+  #
+  # This value is overridden by the SITE_URL environment variable (see vendor/integration/
+  # utils/configBuilder.ts). Canonicals, the sitemap and OG image URLs bake in at build time,
+  # so a wrong value here ships broken link previews while nothing looks wrong locally.
+  site: 'https://www.innochipdesign.ru'
+  base: '/'
+  # 'never'. Set here and ONLY here — the vendor integration turns this into Astro's
+  # trailingSlash during astro:config:setup, so setting it in astro.config.ts too makes them fight.
+  trailingSlash: false
+
+# Default SEO metadata
+metadata:
+  title:
+    default: InnoChipDesign
+    template: '%s — InnoChipDesign'
+  description: 'Innopolis community dedicated to FPGA, ASIC and RISC-V.'
+  robots:
+    index: true
+    follow: true
+  openGraph:
+    site_name: Innopolis Chip Design Club
+    images:
+      # 🔴 PLACEHOLDER — this is the 512×512 app icon, not a share card. A real 1200×630
+      # card is needed before launch; at this size social previews will letterbox it.
+      - url: '~/assets/images/default.png'
+        width: 1200
+        height: 628
+    type: website
+  twitter:
+    cardType: summary_large_image
+
+i18n:
+  language: en
+  textDirection: ltr
+
+apps:
+  blog:
+    # The club site has no blog. Events and project write-ups were the plan for a later round,
+    # and they are content collections, not this.
+    isEnabled: false
+
+# No analytics, by decision. The site collects nothing, which is why it needs no cookie banner
+# and makes zero third-party requests. Cheap to keep, expensive to win back.
+
+ui:
+  # 'light', not 'system'. The design direction is light-first with dark as a deliberate toggle;
+  # 'system' would hand dark mode to every visitor whose OS prefers it.
+  theme: 'light'

@@ -1,0 +1,15 @@
+---
+/**
+ * The icon set lives in `public/`, not `src/assets/`, because it is generated as a set by
+ * `pnpm icons` from src/assets/logo.svg and the manifest has to reference stable, root-absolute
+ * paths. That is why these are plain strings rather than imported ImageMetadata.
+ *
+ * The mark is a reversed green field — the colour IS the logo — so there is no
+ * prefers-color-scheme variant and no mask-icon colour to set.
+ */
+---
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />

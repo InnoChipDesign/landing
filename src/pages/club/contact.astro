@@ -2,92 +2,107 @@
 /**
  * `/club/contact`.
  *
- * The map is a clickable STATIC IMAGE, not a live embed (D27). A Yandex Maps embed would load a
- * tracking-capable script on this page and require widening the CSP — and it would break the "zero
- * third-party requests until a visitor clicks a video" property that holds everywhere else. The
- * address is also printed as text, so the map is never the only way to get the information.
+ * No contact form: there is no backend and no form service, so a form here would either lie or
+ * introduce a third-party dependency. The chat and the email address are the real channels, and
+ * both are faster than a form anyway.
  *
- * 🔴 Overruling this is a one-component change plus a CSP `frame-src` entry (11-club-data.md §4).
+ * The map is a clickable static image, never a live embed — an embed loads a tracking-capable
+ * script and would cost the site its zero-third-party-requests property. The address is also
+ * printed as text, so the map is never the only way to get the information.
  */
-import ClubLayout from '../../layouts/ClubLayout.astro';
-import Container from '../../components/layout/Container.astro';
-import PageHeader from '../../components/ui/PageHeader.astro';
-import ExternalLink from '../../components/ui/ExternalLink.astro';
-import { site } from '../../data/site';
-import * as schema from '../../lib/seo';
-import { routes } from '../../lib/routes';
+import PageLayout from '~/layouts/PageLayout.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import { Icon } from 'astro-icon/components';
+
+import { site } from '~/data/site';
 
 const { address } = site.contact;
-const fullAddress = `${address.street}, ${address.locality}, ${address.region}, ${address.postalCode}`;
+const addressLine = `${address.street}, ${address.locality}, ${address.region}, ${address.postalCode}`;
+
+const metadata = {
+  title: 'Contact',
+  description: 'Joining or a question about a session? The chat. Press or collaboration? Email.',
+};
 ---
 
-<ClubLayout
-  title="Contact"
-  description={`Get in touch with the ${site.fullName} — Telegram, email, and where to find us on campus.`}
-  schema={[schema.contactPage(Astro.site!.href)]}
-  breadcrumb={[{ name: 'Contact', href: routes.contact() }]}
->
-  <PageHeader
-    title="Contact"
-    lead="Joining or a question about a session? The chat. Press or collaboration? Email."
+<PageLayout metadata={metadata}>
+  <HeroText tagline="Contact">
+    <Fragment slot="title">Contact</Fragment>
+    <Fragment slot="subtitle">
+      Joining, or a question about a session? Use the chat — it is where everyone actually is. Press or collaboration?
+      Email.
+    </Fragment>
+  </HeroText>
+
+  <Features2
+    columns={2}
+    items={[
+      {
+        title: 'Telegram',
+        description: 'The club chat. Session rooms, topics and questions.',
+        icon: 'tabler:brand-telegram',
+        callToAction: { text: 'Open the chat', href: site.contact.chat, target: '_blank' },
+      },
+      {
+        title: 'Email',
+        description: site.contact.email,
+        icon: 'tabler:mail',
+        callToAction: { text: 'Send an email', href: `mailto:${site.contact.email}` },
+      },
+      {
+        title: 'GitHub',
+        description: 'Every project the club publishes, with its source.',
+        icon: 'tabler:brand-github',
+        callToAction: { text: 'View the organisation', href: site.repoUrl, target: '_blank' },
+      },
+      {
+        title: 'Faculty advisor',
+        description: `${site.advisor.name} — ${site.advisor.role}, ${site.university.name}.`,
+        icon: 'tabler:user-star',
+      },
+    ]}
   />
 
-  <Container class="pb-20">
-    <div class="grid gap-12 lg:grid-cols-2">
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16">
+    <div class="mx-auto grid max-w-4xl items-center gap-8 md:grid-cols-2">
       <div>
-        <h2 class="text-(length:--text-h2) leading-(--text-h2--line-height)">Channels</h2>
-        <dl class="mt-6 flex flex-col gap-5">
-          <div>
-            <dt class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase">
-              Telegram
-            </dt>
-            <dd class="mt-1"><ExternalLink href={site.contact.chat}>InnoChipDesign</ExternalLink></dd>
-          </div>
-          <div>
-            <dt class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase">
-              Email
-            </dt>
-            <dd class="mt-1">
-              <a href={`mailto:${site.contact.email}`} class="text-(--color-accent) hover:underline">
-                {site.contact.email}
-              </a>
-            </dd>
-          </div>
-          <div>
-            <dt class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase">
-              GitHub
-            </dt>
-            <dd class="mt-1">
-              <ExternalLink href={site.contact.github}>InnoChipDesign</ExternalLink>
-            </dd>
-          </div>
-          <div>
-            <dt class="text-(length:--text-meta) font-semibold tracking-wide text-(--color-muted) uppercase">
-              Faculty advisor
-            </dt>
-            <dd class="mt-1">{site.advisor.name} · {site.advisor.role}</dd>
-          </div>
-        </dl>
+        <h2 class="text-(length:--text-h2) leading-(--text-h2--line-height) font-bold">Where we are</h2>
+        <address class="mt-4 text-lg text-muted not-italic">
+          {address.street}<br />
+          {address.locality}, {address.region}<br />
+          {address.postalCode}
+        </address>
+        <p class="mt-4 text-muted">
+          The room is announced in the Telegram chat before each session — it is never fixed.
+        </p>
       </div>
 
-      <div>
-        <h2 class="text-(length:--text-h2) leading-(--text-h2--line-height)">Where to find us</h2>
-        <address class="mt-6 not-italic text-(--color-muted)">{fullAddress}</address>
-
-        {/* 🔴 The static map image is not committed yet. It belongs at
-            src/assets/images/map-innopolis.png with the building marked, and its `alt` must
-            describe the location in words. The placeholder box below holds the same space so the
-            layout does not move when it lands. */}
-        <a
-          href={site.contact.mapLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="mt-6 flex aspect-[4/3] items-center justify-center rounded-(--radius-lg) border border-dashed border-(--color-border) bg-(--color-surface) p-6 text-center text-(length:--text-meta) text-(--color-muted) transition-colors duration-(--dur-fast) hover:border-(--color-accent) hover:text-(--color-accent)"
-        >
-          Open in Yandex Maps ↗
-          <span class="sr-only">(opens in a new tab)</span>
-        </a>
-      </div>
+      {
+        /* 🔴 PLACEHOLDER — a real static map screenshot with the building marked was specified but
+          never supplied. Until it is, this is a labelled link rather than a fake map. */
+      }
+      <a
+        href={site.contact.mapLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex min-h-52 flex-col items-center justify-center rounded-(--radius-lg) border border-(--club-border) bg-surface p-8 text-center transition duration-200 hover:border-primary/40 hover:shadow-(--shadow-md)"
+      >
+        <Icon name="tabler:map-pin" class="size-8 text-primary" />
+        <span class="mt-4 flex items-center gap-1 font-semibold">
+          Open in Yandex Maps
+          <Icon name="tabler:arrow-up-right" class="size-4 text-muted" />
+        </span>
+        <span class="mt-2 text-sm text-muted">{addressLine}</span>
+      </a>
     </div>
-  </Container>
-</ClubLayout>
+  </section>
+
+  <CallToAction actions={[{ variant: 'primary', text: 'How to join', href: '/club/join' }]}>
+    <Fragment slot="title">Just want to come along?</Fragment>
+    <Fragment slot="subtitle">
+      {`${site.meetings.recurrence} ${site.meetings.season}. ${site.meetings.locationNote}`}
+    </Fragment>
+  </CallToAction>
+</PageLayout>

@@ -1,0 +1,44 @@
+---
+/**
+ * The CLUB layout — everything under `/club`. Header with nav and the two service buttons, footer
+ * with the club's links. The portal at `/` deliberately uses PortalLayout instead.
+ */
+import Layout from '~/layouts/Layout.astro';
+import Header from '~/components/widgets/Header.astro';
+import Footer from '~/components/widgets/Footer.astro';
+
+import { clubHeaderData, clubFooterData } from '~/navigation';
+import { getHomePermalink, getPermalink } from '~/utils/permalinks';
+
+import type { MetaData } from '~/types';
+
+export interface Props {
+  metadata?: MetaData;
+}
+
+const { metadata } = Astro.props;
+---
+
+<Layout metadata={metadata}>
+  <slot name="header">
+    {
+      /* The two hrefs that encode the zone split. homeHref sends the wordmark to the club home,
+        not the portal: a visitor reading /club/about who clicks the logo wants /club, not the
+        switchboard. portalHref is the way back out, and since the header carries no service
+        buttons it is the only route from here to the club's other properties. */
+    }
+    <Header
+      {...clubHeaderData}
+      homeHref={getPermalink('/club')}
+      portalHref={getHomePermalink()}
+      isSticky
+      showToggleTheme
+    />
+  </slot>
+  <main>
+    <slot />
+  </main>
+  <slot name="footer">
+    <Footer {...clubFooterData} />
+  </slot>
+</Layout>

@@ -1,39 +1,47 @@
 ---
 /**
- * `/` — the PORTAL (D19). A switchboard, not a page: its whole job is to get a visitor to the
- * right property in one click. Logo, name, three tiles — nothing else.
+ * `/` — the PORTAL. A switchboard, not a page: its whole job is to get a visitor to the right
+ * property in one click. Logo, name, three tiles — nothing else.
  *
- * Zero JS except the theme script. This page must be the fastest thing on the domain.
+ * This page must be the fastest thing on the domain, which is why it uses no widget from
+ * src/components/widgets: WidgetWrapper would drag a max-w-7xl container and an intersect fade onto
+ * it, and Hero/HeroText both open with a negative top margin that assumes a sticky header this page
+ * does not have.
  *
- * The tiles come from services.yaml — the same file that drives the two header buttons and the
- * "Services built by us" section on /club/resources. Adding a fourth property is a data change.
- * The first entry gets the full-width tile on the top row; the rest pair up beneath it.
+ * The tiles come from src/data/services.ts — the same file that drives the two club header buttons.
+ * The first entry gets the full-width tile on the top row; the rest pair up beneath it. Adding a
+ * fourth property is a data change, not a layout change.
  */
-import PortalLayout from '../layouts/PortalLayout.astro';
-import Container from '../components/layout/Container.astro';
-import Logo from '../components/layout/Logo.astro';
-import PortalCard from '../components/portal/PortalCard.astro';
-import { site } from '../data/site';
-import { portalServices } from '../lib/nav';
+import PortalLayout from '~/layouts/PortalLayout.astro';
+import PortalCard from '~/components/PortalCard.astro';
+import { Image } from 'astro:assets';
+import logo from '~/assets/logo.svg';
+import { site } from '~/data/site';
+import { portalServices } from '~/data/services';
 
-const services = await portalServices();
+const metadata = {
+  title: site.name,
+  ignoreTitleTemplate: true,
+  description: site.tagline,
+};
 ---
 
-<PortalLayout title={site.name} description={site.tagline} image="/og/portal.png">
-  <Container class="py-16 text-center sm:py-24">
-    <Logo class="mx-auto size-12" />
-    <h1 class="mt-6 text-(length:--text-display) leading-(--text-display--line-height)">
+<PortalLayout metadata={metadata}>
+  <div class="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 sm:py-24">
+    <Image src={logo} alt="" width={48} height={48} class="mx-auto size-12 rounded-lg" aria-hidden="true" />
+
+    <h1 class="mt-6 text-(length:--text-display) leading-(--text-display--line-height) font-bold">
       {site.name}
     </h1>
 
     <ul class="mx-auto mt-12 grid max-w-3xl gap-5 text-left sm:grid-cols-2">
       {
-        services.map((service, i) => (
+        portalServices.map((service, i) => (
           <li class={i === 0 ? 'sm:col-span-2' : undefined}>
             <PortalCard service={service} />
           </li>
         ))
       }
     </ul>
-  </Container>
+  </div>
 </PortalLayout>

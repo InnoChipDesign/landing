@@ -1,0 +1,24 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { Service } from '~/data/services';
+
+export interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+const isExternal = service.kind === 'external';
+---
+
+<a
+  href={service.url}
+  {...isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {}}
+  class="group flex h-full min-h-52 flex-col items-center justify-center rounded-(--radius-lg) border border-(--club-border) bg-page p-8 text-center shadow-(--shadow-sm) transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-(--shadow-md)"
+>
+  <Icon name={service.icon} class="size-8 text-primary" />
+  <h2 class="mt-4 flex items-center gap-1 text-(length:--text-h3) font-semibold">
+    {service.name}
+    {isExternal && <Icon name="tabler:arrow-up-right" class="size-4 text-muted" />}
+  </h2>
+  <p class="mt-2 max-w-xs text-muted">{service.tagline}</p>
+</a>

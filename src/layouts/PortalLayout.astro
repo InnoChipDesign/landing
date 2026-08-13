@@ -1,34 +1,25 @@
 ---
 /**
- * The portal at `/` (D19). No header nav, no footer nav — it is a switchboard, not a page.
+ * The PORTAL layout — `/` only. Base document, no header nav, no footer nav.
  *
- * It shares BaseLayout, every token, both fonts and the theme script with the club zone. What
- * distinguishes it is DENSITY, not palette (06 §8): three large cards, a short page, no
- * navigation. If it ever grows a projects section or an about paragraph it has become a homepage,
- * and the /club split has lost its point.
+ * The portal is a switchboard, not a page: its whole job is to get a visitor to the right property
+ * in one click. If it ever grows a projects section or an about paragraph it has become a homepage,
+ * and the `/club` split has lost its point. Resist that; the club site is one click away and is
+ * where every one of those sections belongs.
  */
-import BaseLayout from './BaseLayout.astro';
-import SkipLink from '../components/layout/SkipLink.astro';
-import { graph, organization, website } from '../lib/seo';
+import Layout from '~/layouts/Layout.astro';
 
-interface Props {
-  title: string;
-  description: string;
-  image?: string;
+import type { MetaData } from '~/types';
+
+export interface Props {
+  metadata?: MetaData;
 }
 
-const props = Astro.props;
-
-// `WebSite` belongs on `/` and nowhere else (07 §1) — the portal is this site's homepage as far as
-// a crawler is concerned, even though the content lives under /club. `Organization` goes on both
-// zones, so the two never look like two different clubs.
-const origin = Astro.site!.href;
-const jsonLd = graph([organization(origin), website(origin)]);
+const { metadata } = Astro.props;
 ---
 
-<BaseLayout {...props} jsonLd={jsonLd} bodyClass="flex min-h-dvh flex-col">
-  <SkipLink />
-  <main id="main" class="flex flex-1 flex-col justify-center">
+<Layout metadata={metadata}>
+  <main>
     <slot />
   </main>
-</BaseLayout>
+</Layout>

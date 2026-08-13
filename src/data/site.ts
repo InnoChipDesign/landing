@@ -1,15 +1,18 @@
 /**
- * Club facts. Copied by hand from planning/11-club-data.md §10, which is the source of truth.
+ * Club facts. Copied by hand from CLUB.md, which is the source of truth.
  *
  * Rule: no component, layout or page may hardcode a club fact that is not in this file or in a
  * content file. If you find yourself typing an address, a Telegram handle or a founding year into
  * a `.astro` file, it belongs here instead.
  *
- * 🔴 markers below are facts the club leader still owes us (11-club-data.md §11).
+ * 🔴 markers below are facts the club leader still owes us; they are tracked in CLUB.md.
  */
 export const site = {
   name: 'InnoChipDesign',
   fullName: 'Innopolis Chip Design Club',
+  // The wordmark inside the club zone. `name` is the umbrella brand over every property and stays
+  // on the portal; under /club the header says what this particular property is.
+  clubName: 'ICD Student Club',
   foundedYear: 2023,
 
   tagline: 'Innopolis community dedicated to FPGA, ASIC and RISC-V.',
@@ -47,16 +50,18 @@ export const site = {
   advisor: { name: 'Mikhail Kuskov', role: 'Senior Instructor' },
 
   meetings: {
-    // D26 — deliberately a recurring statement, not a date. Nobody volunteered to keep a "next
-    // meeting" banner current, and a stale date makes a site look abandoned.
+    // Deliberately a recurring statement, not a date. Nobody volunteered to keep a "next
+    // meeting" banner current, and a stale date makes a site look abandoned; this sentence stays
+    // true for years unmaintained.
     recurrence: 'Every Saturday at 12:00',
     season: 'during the spring and fall semesters',
     locationNote: 'The room is announced in the Telegram chat before each session.',
   },
 
   join: {
-    // D18 — this is YADRO's Chip Design School application, NOT a club membership form. The
-    // /club/join copy must say so plainly; `formIsThirdParty` drives that note.
+    // This is YADRO's Chip Design School application, NOT a club membership form. The
+    // /club/join copy must say so plainly; `formIsThirdParty` drives that note. A visitor who
+    // wanted to join the club and lands on an unrelated school signup is the failure to avoid.
     formUrl: 'https://engineer.yadro.com/chip-design-school/#applicationForm',
     formLabel: 'Sign up for the Chip Design School',
     formIsThirdParty: true,
@@ -69,7 +74,7 @@ export const site = {
     { id: 'github', label: 'GitHub', url: 'https://github.com/InnoChipDesign' },
   ],
 
-  // D32 — partners row at the foot of /club/about.
+  // Partners row at the foot of /club/about.
   partners: [
     {
       name: 'ADV-T', // 🔴 confirm: brand name, or ООО «Адв-Тех»?
@@ -89,11 +94,10 @@ export const site = {
   competition: {
     name: 'YADRO SoC Design Challenge',
     url: 'https://edu.yadro.com/soc-design-challenge/',
-    // 🔴 The 2024 track, placement and team are unverified (11-club-data.md §6). Until they are
-    // supplied, this is the truthful, checkable version — do not upgrade it to "won".
+    // 🔴 The 2024 track, placement and team are unverified. Until they are supplied, this is the
+    // truthful, checkable version — do not upgrade it to "won prizes".
     record:
-      'The club has fielded teams at the YADRO SoC Design Challenge every year since 2023 and ' +
-      'placed in 2024.',
+      'The club has fielded teams at the YADRO SoC Design Challenge every year since 2023 and ' + 'placed in 2024.',
   },
 } as const;
 
