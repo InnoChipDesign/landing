@@ -21,7 +21,7 @@ export type Service = {
 export const services: readonly Service[] = [
   {
     id: 'club',
-    name: 'The Club',
+    name: 'The Student Club',
     tagline: 'Projects, events and how to join.',
     url: '/club',
     kind: 'internal',
