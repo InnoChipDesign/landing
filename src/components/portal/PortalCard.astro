@@ -24,7 +24,7 @@ const isExternal = kind === 'external';
   target={isExternal ? '_blank' : undefined}
   rel={isExternal ? 'noopener noreferrer' : undefined}
   aria-label={isExternal ? `${name} — opens in a new tab` : name}
-  class="group relative isolate flex min-h-52 flex-col justify-between overflow-hidden rounded-(--radius-lg) border border-(--color-border) bg-(--color-bg) p-6 shadow-(--shadow-sm) transition-[transform,box-shadow,border-color] duration-(--dur-base) ease-(--ease-out) hover:-translate-y-0.5 hover:border-(--color-accent)/40 hover:shadow-(--shadow-md)"
+  class="group relative isolate flex min-h-52 flex-col items-center justify-center overflow-hidden rounded-(--radius-lg) border border-(--color-border) bg-(--color-bg) p-6 text-center shadow-(--shadow-sm) transition-[transform,box-shadow,border-color] duration-(--dur-base) ease-(--ease-out) hover:-translate-y-0.5 hover:border-(--color-accent)/40 hover:shadow-(--shadow-md)"
 >
   {
     screenshot && (
@@ -43,7 +43,9 @@ const isExternal = kind === 'external';
   <Icon name="lucide:cpu" class="size-6 text-(--color-accent)" aria-hidden="true" />
 
   <div class="mt-6">
-    <h2 class="flex items-center gap-2 text-(length:--text-h3) leading-(--text-h3--line-height)">
+    <h2
+      class="flex items-center justify-center gap-2 text-(length:--text-h3) leading-(--text-h3--line-height)"
+    >
       {name}
       {isExternal && <Icon name="lucide:arrow-up-right" class="size-4 text-(--color-muted)" aria-hidden="true" />}
     </h2>

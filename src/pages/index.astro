@@ -1,12 +1,13 @@
 ---
 /**
  * `/` — the PORTAL (D19). A switchboard, not a page: its whole job is to get a visitor to the
- * right property in one click.
+ * right property in one click. Logo, name, three tiles — nothing else.
  *
  * Zero JS except the theme script. This page must be the fastest thing on the domain.
  *
- * The cards come from services.yaml — the same file that drives the two header buttons and the
+ * The tiles come from services.yaml — the same file that drives the two header buttons and the
  * "Services built by us" section on /club/resources. Adding a fourth property is a data change.
+ * The first entry gets the full-width tile on the top row; the rest pair up beneath it.
  */
 import PortalLayout from '../layouts/PortalLayout.astro';
 import Container from '../components/layout/Container.astro';
@@ -24,38 +25,15 @@ const services = await portalServices();
     <h1 class="mt-6 text-(length:--text-display) leading-(--text-display--line-height)">
       {site.name}
     </h1>
-    <p class="mx-auto mt-4 max-w-xl text-(length:--text-lead) text-(--color-muted)">
-      {site.tagline}
-    </p>
 
-    <ul class="mt-12 grid gap-5 text-left sm:grid-cols-2 lg:grid-cols-3">
-      {services.map((service) => <li><PortalCard service={service} /></li>)}
-    </ul>
-
-    {/* A plain text strip. No nav, no columns — anything more and this is a homepage. */}
-    <p
-      class="mt-12 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-(length:--text-meta) text-(--color-muted)"
-    >
-      <a href={site.university.url} target="_blank" rel="noopener noreferrer" class="hover:text-(--color-text)">
-        {site.university.name}
-      </a>
-      <span aria-hidden="true">·</span>
-      <span>Founded {site.foundedYear}</span>
+    <ul class="mx-auto mt-12 grid max-w-3xl gap-5 text-left sm:grid-cols-2">
       {
-        site.social.map((account) => (
-          <>
-            <span aria-hidden="true">·</span>
-            <a
-              href={account.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hover:text-(--color-text)"
-            >
-              {account.label}
-            </a>
-          </>
+        services.map((service, i) => (
+          <li class={i === 0 ? 'sm:col-span-2' : undefined}>
+            <PortalCard service={service} />
+          </li>
         ))
       }
-    </p>
+    </ul>
   </Container>
 </PortalLayout>
