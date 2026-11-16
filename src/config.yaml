@@ -1,9 +1,6 @@
 site:
   name: InnoChipDesign
-  # 🔴 UNRESOLVED: the canonical domain has not been decided. Two were proposed —
-  # www.innochipdesign.ru (public, memorable, matches the brand) and
-  # innochipdesign.campus.innopolis.university (the campus host). One must 301 to the other;
-  # serving the same HTML on both splits any search ranking between them.
+  # Canonical origin: https://innochipdesign.campus.innopolis.university
   #
   # This value is overridden by the SITE_URL environment variable (see vendor/integration/
   # utils/configBuilder.ts). Canonicals, the sitemap and OG image URLs bake in at build time,

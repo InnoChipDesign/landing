@@ -48,19 +48,9 @@ It is a **reversed** mark: the green field _is_ the logo. Consequences that are 
 
 ## 2. Domains
 
-| Domain                                       | Role                                                         |
-| -------------------------------------------- | ------------------------------------------------------------ |
-| `www.innochipdesign.ru`                      | 🟡 proposed canonical — public, memorable, matches the brand |
-| `innochipdesign.campus.innopolis.university` | 🟡 proposed alias — should 301 to the canonical              |
-
-🔴 **Blocking the first production build.** `SITE_URL` bakes one origin into every canonical, sitemap
-entry and OG image URL. Serving the same HTML on both hosts without a redirect produces duplicate
-content and splits any search ranking between them.
-
-Recommended resolution: canonical `https://www.innochipdesign.ru`, with the campus host issuing a
-permanent redirect at the university's reverse proxy. If the university host must serve content
-directly, build the image twice with different `SITE_URL` values rather than serving one build on
-two names.
+| Domain                                       | Role                                                             |
+| -------------------------------------------- | ---------------------------------------------------------------- |
+| `innochipdesign.campus.innopolis.university` | Canonical — `https://innochipdesign.campus.innopolis.university` |
 
 ### URL layout — portal at `/`, club at `/club`
 
@@ -89,15 +79,11 @@ Defined in `src/data/services.ts`, which drives the portal tiles at `/`. The clu
 service buttons: from under `/club` the other properties are reached through the portal link beside
 the wordmark.
 
-| id     | Name                          | Tagline                                                 | URL                                     |
-| ------ | ----------------------------- | ------------------------------------------------------- | --------------------------------------- |
-| `club` | The Club                      | Projects, events and how to join.                       | `/club`                                 |
-| `vcd`  | Visual Circuit Designer (VCD) | Design, simulate and compile circuits, interactively.   | 🔴 `https://vcd.innochipdesign.ru`      |
-| `hw`   | Homework (HW)                 | Verilog practice with submission and automatic grading. | 🔴 `https://homework.innochipdesign.ru` |
-
-🔴 **Both external URLs are invented and do not resolve.** The names and taglines came from the club
-leader; the addresses did not. `astro build` cannot catch a wrong one — an external URL is just a
-string, so a typo ships as a dead card on the front page of the site.
+| id     | Name                          | Tagline                                                 | URL                                                           |
+| ------ | ----------------------------- | ------------------------------------------------------- | ------------------------------------------------------------- |
+| `club` | The Club                      | Projects, events and how to join.                       | `/club`                                                       |
+| `vcd`  | Visual Circuit Designer (VCD) | Design, simulate and compile circuits, interactively.   | `https://innochipdesign.campus.innopolis.university/vcd`      |
+| `hw`   | Homework (HW)                 | Verilog practice with submission and automatic grading. | `https://innochipdesign.campus.innopolis.university/homework` |
 
 ---
 
@@ -198,12 +184,10 @@ code; `grep -rn "🔴" src/` finds them.
 
 | #   | Item                                                               | Blocks                      |
 | --- | ------------------------------------------------------------------ | --------------------------- |
-| 1   | **Canonical domain** — `www.innochipdesign.ru` or the campus host  | the first production build  |
-| 2   | **Real VCD and Homework URLs** — both current values are invented  | `/`                         |
-| 3   | **ADV-T credit wording and relationship**                          | `/club/about`               |
-| 4   | **2024 SoC Design Challenge track, placement, team**               | `/club/about`               |
-| 5   | **Static map screenshot** of Universitetskaya 1                    | `/club/contact`             |
-| 6   | 🟡 **Approve the mission copy and the `/club/join` framing**       | `/club/about`, `/club/join` |
-| 7   | **A real 1200×630 OG share card** — currently the 512×512 app icon | every link preview          |
+| 1   | **ADV-T credit wording and relationship**                          | `/club/about`               |
+| 2   | **2024 SoC Design Challenge track, placement, team**               | `/club/about`               |
+| 3   | **Static map screenshot** of Universitetskaya 1                    | `/club/contact`             |
+| 4   | 🟡 **Approve the mission copy and the `/club/join` framing**       | `/club/about`, `/club/join` |
+| 5   | **A real 1200×630 OG share card** — currently the 512×512 app icon | every link preview          |
 
 Not blocking, worth deciding eventually: a `club@…` role email instead of a personal address.

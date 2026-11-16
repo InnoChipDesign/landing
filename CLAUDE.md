@@ -38,8 +38,8 @@ because setting `site` in `astro.config.ts` does not work — the integration ca
 `updateConfig({ site })` during `astro:config:setup` and overwrites it.
 
 The dangerous failure is not a crash but a wrong-but-valid origin: it ships wrong canonicals and
-wrong link previews while nothing looks broken locally. 🔴 The canonical domain is still undecided —
-see `CLUB.md` §2.
+wrong link previews while nothing looks broken locally. The canonical domain is
+`https://innochipdesign.campus.innopolis.university` — see `CLUB.md` §2.
 
 ## Architecture
 

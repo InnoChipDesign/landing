@@ -33,10 +33,6 @@ export const services: readonly Service[] = [
     name: 'Visual Circuit Designer',
     short: 'VCD',
     tagline: 'Design, simulate and compile circuits, interactively.',
-    // 🔴 PLACEHOLDER URL — this address is invented and does not currently resolve. The names and
-    // taglines came from the club leader; the URLs did not. Both services need their real address
-    // before launch, and `astro build` cannot catch a wrong one — an external URL is just a string,
-    // so a typo here ships as a dead card on the site's front page.
     url: 'https://innochipdesign.campus.innopolis.university/vcd',
     kind: 'internal',
     icon: 'tabler:circuit-changeover',
@@ -47,7 +43,6 @@ export const services: readonly Service[] = [
     name: 'Homework',
     short: 'HW',
     tagline: 'Verilog practice with submission and automatic grading.',
-    // 🔴 PLACEHOLDER URL — see above.
     url: 'https://innochipdesign.campus.innopolis.university/homework',
     kind: 'internal',
     icon: 'tabler:checkbox',

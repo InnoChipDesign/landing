@@ -1,5 +1,5 @@
 FROM node:24-alpine AS build
-ARG SITE_URL=http://localhost:8070
+ARG SITE_URL=https://innochipdesign.campus.innopolis.university
 ENV SITE_URL=$SITE_URL
 WORKDIR /app
 RUN corepack enable

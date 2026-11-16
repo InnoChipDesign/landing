@@ -1,0 +1,17 @@
+.git
+.gitignore
+.astro
+dist
+node_modules
+package-lock.json
+.env
+.env.*
+*.log
+.DS_Store
+.vscode
+Dockerfile
+docker-compose.yml
+.dockerignore
+CLAUDE.md
+CLUB.md
+LICENSE.md
