@@ -8,7 +8,7 @@ site:
   # This value is overridden by the SITE_URL environment variable (see vendor/integration/
   # utils/configBuilder.ts). Canonicals, the sitemap and OG image URLs bake in at build time,
   # so a wrong value here ships broken link previews while nothing looks wrong locally.
-  site: 'https://www.innochipdesign.ru'
+  site: 'https://innochipdesign.campus.innopolis.university'
   base: '/'
   # 'never'. Set here and ONLY here — the vendor integration turns this into Astro's
   # trailingSlash during astro:config:setup, so setting it in astro.config.ts too makes them fight.

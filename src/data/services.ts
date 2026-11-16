@@ -37,8 +37,8 @@ export const services: readonly Service[] = [
     // taglines came from the club leader; the URLs did not. Both services need their real address
     // before launch, and `astro build` cannot catch a wrong one — an external URL is just a string,
     // so a typo here ships as a dead card on the site's front page.
-    url: 'https://vcd.innochipdesign.ru',
-    kind: 'external',
+    url: 'https://innochipdesign.campus.innopolis.university/vcd',
+    kind: 'internal',
     icon: 'tabler:circuit-changeover',
     onPortal: true,
   },
@@ -48,8 +48,8 @@ export const services: readonly Service[] = [
     short: 'HW',
     tagline: 'Verilog practice with submission and automatic grading.',
     // 🔴 PLACEHOLDER URL — see above.
-    url: 'https://homework.innochipdesign.ru',
-    kind: 'external',
+    url: 'https://innochipdesign.campus.innopolis.university/homework',
+    kind: 'internal',
     icon: 'tabler:checkbox',
     onPortal: true,
   },
