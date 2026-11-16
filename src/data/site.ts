@@ -74,22 +74,8 @@ export const site = {
     { id: 'github', label: 'GitHub', url: 'https://github.com/InnoChipDesign' },
   ],
 
-  // Partners row at the foot of /club/about.
-  partners: [
-    {
-      name: 'ADV-T', // 🔴 confirm: brand name, or ООО «Адв-Тех»?
-      legalName: 'ООО «Адв-Тех»',
-      url: 'https://adv-t.ru',
-      note: 'Systems integrator', // 🔴 confirm the relationship wording
-    },
-  ],
-  // Rendered only when partners.length > 0 — alone it reads as "nobody sponsors us".
-  partnerInvite: {
-    enabled: true,
-    heading: 'Your company could be here',
-    body: 'We work with companies on student hardware projects.',
-    mailto: 'm.kuskov@innopolis.university',
-  },
+  // Partners are omitted from the website until ADV-T wording and relationship are confirmed
+  // (see CLUB.md §6).
 
   competition: {
     name: 'YADRO SoC Design Challenge',
@@ -97,8 +83,36 @@ export const site = {
     // 🔴 The 2024 track, placement and team are unverified. Until they are supplied, this is the
     // truthful, checkable version — do not upgrade it to "won prizes".
     record:
-      'The club has fielded teams at the YADRO SoC Design Challenge every year since 2023 and ' + 'placed in 2024.',
+      'The club has fielded teams at the YADRO SoC Design Challenge every year from 2023 to 2026 ' +
+      'and placed in 2024.',
   },
+
+  faq: [
+    {
+      question: 'Do I need prior hardware or Verilog experience?',
+      answer:
+        'No. There is no selection process and no prior experience required — several current members started by turning up.',
+    },
+    {
+      question: 'Do I have to apply through the YADRO Chip Design School?',
+      answer:
+        'No application is required to come to Saturday sessions. The Chip Design School is a free third-party course run by YADRO with MIET, MFTI and ITMO whose curriculum our sessions follow; signing up for it is optional.',
+    },
+    {
+      question: 'When and where do you meet?',
+      answer:
+        'Every Saturday at 12:00 during the spring and fall semesters at Innopolis University (Universitetskaya Street 1). The room is never fixed and is announced in the Telegram chat before each session.',
+    },
+    {
+      question: 'What will I actually build?',
+      answer:
+        'Digital hardware: writing RTL, running designs on real FPGA boards, verifying them, and building your own projects — from RISC-V cores and memory subsystems to games — published on GitHub.',
+    },
+    {
+      question: 'Is there any membership fee?',
+      answer: 'No. The club is a student engineering community at Innopolis University and is free to join.',
+    },
+  ],
 } as const;
 
 export type Site = typeof site;

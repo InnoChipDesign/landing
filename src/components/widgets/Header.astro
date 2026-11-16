@@ -205,8 +205,11 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
     private onScroll?: () => void;
     private mql?: MediaQueryList;
     private onMqlChange?: () => void;
+    private sectionObserver?: IntersectionObserver;
+    private onHashChange = () => this.updateActiveLinks();
     private onPageLoad = () => {
       this.updateActiveLinks();
+      this.setupSectionObserver();
       this.closeOpenDropdown();
     };
 
@@ -220,7 +223,9 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
       // the server-rendered `aw-link-active` class would go stale. Re-compute it
       // on every navigation (astro:page-load fires on load and after each swap).
       this.updateActiveLinks();
+      this.setupSectionObserver();
       document.addEventListener('astro:page-load', this.onPageLoad);
+      window.addEventListener('hashchange', this.onHashChange);
 
       const closeMenu = () => {
         toggle?.classList.remove('expanded');
@@ -285,7 +290,9 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
     disconnectedCallback() {
       if (this.onScroll) document.removeEventListener('scroll', this.onScroll);
       if (this.mql && this.onMqlChange) this.mql.removeEventListener('change', this.onMqlChange);
+      this.sectionObserver?.disconnect();
       document.removeEventListener('astro:page-load', this.onPageLoad);
+      window.removeEventListener('hashchange', this.onHashChange);
     }
 
     // With `transition:persist` the header (and its focus) survives client-side
@@ -299,8 +306,45 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
     private updateActiveLinks() {
       const norm = (p: string) => '/' + p.replace(/^\/+|\/+$/g, '');
       const current = norm(window.location.pathname);
+      const currentHash = window.location.hash;
       this.querySelectorAll<HTMLAnchorElement>('nav a[href]').forEach((a) => {
-        a.classList.toggle('aw-link-active', norm(new URL(a.href).pathname) === current);
+        const url = new URL(a.href);
+        const samePath = norm(url.pathname) === current;
+        const isActive = url.hash ? samePath && url.hash === currentHash : samePath && !currentHash;
+        a.classList.toggle('aw-link-active', isActive);
+      });
+    }
+
+    private setupSectionObserver() {
+      this.sectionObserver?.disconnect();
+      const norm = (p: string) => '/' + p.replace(/^\/+|\/+$/g, '');
+      const current = norm(window.location.pathname);
+      const linkById = new Map<string, HTMLAnchorElement>();
+
+      this.querySelectorAll<HTMLAnchorElement>('nav a[href]').forEach((a) => {
+        const url = new URL(a.href);
+        if (norm(url.pathname) === current && url.hash) {
+          const id = url.hash.slice(1);
+          if (document.getElementById(id)) linkById.set(id, a);
+        }
+      });
+
+      if (linkById.size === 0 || !('IntersectionObserver' in window)) return;
+
+      this.sectionObserver = new IntersectionObserver(
+        (entries) => {
+          const visible = entries.find((entry) => entry.isIntersecting);
+          if (!visible) return;
+          linkById.forEach((link, id) => {
+            link.classList.toggle('aw-link-active', id === visible.target.id);
+          });
+        },
+        { rootMargin: '-25% 0px -60% 0px', threshold: 0 }
+      );
+
+      linkById.forEach((_, id) => {
+        const target = document.getElementById(id);
+        if (target) this.sectionObserver?.observe(target);
       });
     }
   }

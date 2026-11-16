@@ -1,22 +1,25 @@
 ---
 /**
- * `/club` — the club home.
+ * `/club` — single-page club landing.
  *
- * Order: what we do → what we are → come along. The project showcase that would normally open this
- * page is absent because the projects collection is not part of this round; when it lands it goes
- * above "What we do", not below.
- *
- * No Stats band. The numbers it would show (project count, member count) can only be hand-typed
- * today, and a row of hand-maintained figures is exactly the marketing noise this design avoids.
- * It earns its place once the collection can derive them.
+ * Consolidates the club overview, about, join, FAQ and contact sections into one scrollable page
+ * with sticky anchor navigation. All club facts come from `src/data/site.ts`.
  */
 import PageLayout from '~/layouts/PageLayout.astro';
 import Hero from '~/components/widgets/Hero.astro';
 import Features2 from '~/components/widgets/Features2.astro';
 import Content from '~/components/widgets/Content.astro';
+import Note from '~/components/widgets/Note.astro';
+import Steps from '~/components/widgets/Steps.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
+import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
+import Headline from '~/components/ui/Headline.astro';
+import { Icon } from 'astro-icon/components';
 
 import { site } from '~/data/site';
+
+const { address } = site.contact;
+const addressLine = `${address.street}, ${address.locality}, ${address.region}, ${address.postalCode}`;
 
 const metadata = {
   title: site.fullName,
@@ -27,9 +30,10 @@ const metadata = {
 
 <PageLayout metadata={metadata}>
   <Hero
+    id="top"
     tagline={`${site.university.name} · Since ${site.foundedYear}`}
     actions={[
-      { variant: 'primary', text: 'Join the club', href: '/club/join' },
+      { variant: 'primary', text: 'Join the club', href: '#join' },
       { text: 'See our work', href: site.repoUrl, target: '_blank', icon: 'tabler:brand-github' },
     ]}
   >
@@ -38,6 +42,7 @@ const metadata = {
   </Hero>
 
   <Features2
+    id="what-we-do"
     title="What we do"
     subtitle="Digital hardware, from a first state machine to a taped-out flow."
     columns={4}
@@ -63,18 +68,219 @@ const metadata = {
         icon: 'tabler:stack-2',
       },
     ]}
+  >
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-surface"></div>
+    </Fragment>
+  </Features2>
+
+  <Content
+    id="about"
+    title="About the club"
+    subtitle={`A student engineering community at ${site.university.name}, building digital hardware since ${site.foundedYear}.`}
+    content={`<p>${site.name} formed in ${site.foundedYear} around a simple idea: that the way to understand how a processor works is to build one. Our members design digital hardware — writing RTL, running it on FPGA boards, verifying it, and taking the better projects toward an ASIC flow.</p><p class="mt-4">We meet ${site.meetings.recurrence.toLowerCase()} ${site.meetings.season}. Sessions follow the Chip Design School curriculum run by YADRO with MIET, MFTI and ITMO — a free two-semester course covering logic design, state machines, FPGA architecture, pipelines, microarchitecture and functional verification.</p>`}
   />
 
   <Content
-    title="What we are"
-    content={`<p>${site.name} is a student engineering community at ${site.university.name}. We formed in ${site.foundedYear} around a simple idea: that the way to understand how a processor works is to build one. Our members design digital hardware — writing RTL, running it on FPGA boards, verifying it, and taking the better projects toward an ASIC flow.</p><p class="mt-4">${site.competition.record}</p>`}
-    callToAction={{ text: 'More about the club', href: '/club/about', icon: 'tabler:chevron-right' }}
+    isReversed
+    title="Projects & competitions"
+    content={`<p>Around the curriculum, members build their own projects: RISC-V cores, cache and memory subsystems, audio and video pipelines, and a long line of games that turn out to be an excellent way to learn timing closure. Every project ends up on GitHub.</p><p class="mt-4">${site.competition.record} It is an in-person RISC-V systems-on-chip hackathon at MIET in Zelenograd, with tracks in topological design, RTL, UVM verification, system verification and design-for-test.</p>`}
+    callToAction={{
+      text: 'About the SoC Design Challenge',
+      href: site.competition.url,
+      icon: 'tabler:external-link',
+    }}
+  >
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-surface"></div>
+    </Fragment>
+  </Content>
+
+  <Features2
+    title="Who runs it"
+    columns={2}
+    items={[
+      {
+        title: site.advisor.name,
+        description: `${site.advisor.role}, ${site.university.name}. Faculty advisor to the club.`,
+        icon: 'tabler:user-star',
+      },
+      {
+        title: 'The members',
+        description:
+          'The club is run by its students. Project credits are listed with each project as it is published.',
+        icon: 'tabler:users-group',
+      },
+    ]}
   />
+
+  <WidgetWrapper id="join" containerClass="max-w-5xl">
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-surface"></div>
+    </Fragment>
+    <Headline
+      tagline="Join"
+      title="Join the club"
+      subtitle="Everyone is welcome. There is no selection process and no prior experience required — several current members started by turning up."
+    />
+  </WidgetWrapper>
+
+  <Note
+    icon="tabler:info-circle"
+    title="Before you click step 1:"
+    description="The Chip Design School is a free course run by YADRO with MIET, MFTI and ITMO — not a club application. Our Saturday sessions follow its curriculum, which is why we point you at it. Joining the club itself takes no form at all."
+  />
+
+  <Steps
+    title="How it works"
+    items={[
+      {
+        title: site.join.formLabel,
+        description:
+          'The free YADRO/MIET course our Saturday sessions follow. Opens on their site — it is their programme, not ours.',
+        icon: 'tabler:external-link',
+      },
+      {
+        title: 'Join the Telegram chat',
+        description: 'Where the room and the week&rsquo;s topic are posted before each session.',
+        icon: 'tabler:brand-telegram',
+      },
+      {
+        title: 'Just come on Saturday',
+        description: `${site.meetings.recurrence} ${site.meetings.season}. No application is required to show up.`,
+        icon: 'tabler:door-enter',
+      },
+    ]}
+  />
+
+  <Features2
+    title="What you'll do"
+    columns={3}
+    items={[
+      {
+        title: 'Write RTL that runs',
+        description: 'Digital design on real FPGA hardware, not only in simulation.',
+        icon: 'tabler:code',
+      },
+      {
+        title: 'Build something of your own',
+        description: 'A project you choose, published on GitHub.',
+        icon: 'tabler:tools',
+      },
+      {
+        title: 'Compete, if you want to',
+        description: `Work toward the ${site.competition.name}. Entirely optional.`,
+        icon: 'tabler:trophy',
+      },
+    ]}
+  >
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-surface"></div>
+    </Fragment>
+  </Features2>
+
+  <WidgetWrapper id="faq" containerClass="max-w-4xl">
+    <Headline tagline="FAQ" title="Frequently asked questions" />
+
+    <div class="space-y-4">
+      {
+        site.faq.map((item) => (
+          <details class="group rounded-(--radius-lg) border border-(--club-border) bg-page px-6 py-4 shadow-(--shadow-sm) transition hover:border-primary/40">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-default select-none [&::-webkit-details-marker]:hidden">
+              <span class="text-lg">{item.question}</span>
+              <Icon
+                name="tabler:chevron-down"
+                class="size-5 shrink-0 text-muted transition-transform duration-200 group-open:rotate-180"
+              />
+            </summary>
+            <p class="mt-3 border-t border-(--club-border) pt-3 text-muted">{item.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+  </WidgetWrapper>
+
+  <Features2
+    id="contact"
+    tagline="Contact"
+    title="Get in touch"
+    subtitle="Joining, or a question about a session? Use the chat — it is where everyone actually is. Press or collaboration? Email."
+    columns={2}
+    items={[
+      {
+        title: 'Telegram',
+        description: 'The club chat. Session rooms, topics and questions.',
+        icon: 'tabler:brand-telegram',
+        callToAction: { text: 'Open the chat', href: site.contact.chat, target: '_blank' },
+      },
+      {
+        title: 'Email',
+        description: site.contact.email,
+        icon: 'tabler:mail',
+        callToAction: { text: 'Send an email', href: `mailto:${site.contact.email}` },
+      },
+      {
+        title: 'GitHub',
+        description: 'Every project the club publishes, with its source.',
+        icon: 'tabler:brand-github',
+        callToAction: { text: 'View the organisation', href: site.repoUrl, target: '_blank' },
+      },
+      {
+        title: 'Faculty advisor',
+        description: `${site.advisor.name} — ${site.advisor.role}, ${site.university.name}.`,
+        icon: 'tabler:user-star',
+      },
+    ]}
+  >
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-surface"></div>
+    </Fragment>
+  </Features2>
+
+  <section class="mx-auto max-w-6xl scroll-mt-[72px] px-4 py-12 sm:px-6 md:py-16">
+    <div class="mx-auto grid max-w-4xl items-center gap-8 md:grid-cols-2">
+      <div>
+        <h2 class="text-(length:--text-h2) leading-(--text-h2--line-height) font-bold">Where we are</h2>
+        <address class="mt-4 text-lg text-muted not-italic">
+          {address.street}<br />
+          {address.locality}, {address.region}<br />
+          {address.postalCode}
+        </address>
+        <p class="mt-4 text-muted">
+          The room is announced in the Telegram chat before each session — it is never fixed.
+        </p>
+      </div>
+
+      {
+        /* 🔴 PLACEHOLDER — a real static map screenshot with the building marked was specified but
+          never supplied. Until it is, this is a labelled link rather than a fake map. */
+      }
+      <a
+        href={site.contact.mapLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex min-h-52 flex-col items-center justify-center rounded-(--radius-lg) border border-(--club-border) bg-surface p-8 text-center transition duration-200 hover:border-primary/40 hover:shadow-(--shadow-md)"
+      >
+        <Icon name="tabler:map-pin" class="size-8 text-primary" />
+        <span class="mt-4 flex items-center gap-1 font-semibold">
+          Open in Yandex Maps
+          <Icon name="tabler:arrow-up-right" class="size-4 text-muted" />
+        </span>
+        <span class="mt-2 text-sm text-muted">{addressLine}</span>
+      </a>
+    </div>
+  </section>
 
   <CallToAction
     actions={[
-      { variant: 'primary', text: 'How to join', href: '/club/join' },
-      { text: 'Telegram chat', href: site.contact.chat, target: '_blank', icon: 'tabler:brand-telegram' },
+      {
+        variant: 'primary',
+        text: site.join.formLabel,
+        href: site.join.formUrl,
+        target: '_blank',
+        icon: 'tabler:external-link',
+      },
+      { text: 'Ask in Telegram', href: site.join.chatUrl, target: '_blank', icon: 'tabler:brand-telegram' },
     ]}
   >
     <Fragment slot="title">Come along</Fragment>

@@ -58,10 +58,7 @@ One Astro build, served at the domain root. No `base` config; `/club` is a real 
 
 ```
 /                 portal — the switchboard
-/club             club home
-/club/about
-/club/join
-/club/contact
+/club             club landing (single scrollable page with #what-we-do, #about, #join, #faq, #contact)
 ```
 
 **The portal is a switchboard, not a page.** Its whole job is to get a visitor to the right property
@@ -151,9 +148,9 @@ first-years a student club most wants to reach.
 **ООО «Адв-Тех»**, <https://adv-t.ru> — a full-cycle systems integrator based in Moscow. Equipment
 and software supply, IT infrastructure, deployment, audit and consulting. ~20 years in IT services.
 
-🔴 **Unconfirmed before this is printed:** the _relationship_ (sponsor / partner / employer of
-members) and _how they want to be credited_ — "ADV-T", the Russian legal name, or a supplied logo. A
-wrongly-worded credit for a company is worse than no credit.
+🔴 **Unconfirmed before this is printed (currently omitted from the website):** the _relationship_
+(sponsor / partner / employer of members) and _how they want to be credited_ — "ADV-T", the Russian
+legal name, or a supplied logo. A wrongly-worded credit for a company is worse than no credit.
 
 The leader also asked for a "Your company could be here" card: a dashed-outline `mailto:` card at the
 end of the partners row, shown only alongside at least one real partner. Alone it would read as
@@ -173,7 +170,7 @@ placement, and the team members' names.** The club's placement could not be veri
 sources, and an unverifiable "we won prizes" line is exactly what a visiting recruiter checks. Until
 they are supplied, the site says only the checkable version, and **must not** be upgraded to "won":
 
-> The club has fielded teams at the YADRO SoC Design Challenge every year since 2023 and placed in 2024.
+> The club has fielded teams at the YADRO SoC Design Challenge every year from 2023 to 2026 and placed in 2024.
 
 ---
 
@@ -182,12 +179,12 @@ they are supplied, the site says only the checkable version, and **must not** be
 Everything still blocking or unconfirmed, in one place. Each is also marked 🔴 at its use site in the
 code; `grep -rn "🔴" src/` finds them.
 
-| #   | Item                                                               | Blocks                      |
-| --- | ------------------------------------------------------------------ | --------------------------- |
-| 1   | **ADV-T credit wording and relationship**                          | `/club/about`               |
-| 2   | **2024 SoC Design Challenge track, placement, team**               | `/club/about`               |
-| 3   | **Static map screenshot** of Universitetskaya 1                    | `/club/contact`             |
-| 4   | 🟡 **Approve the mission copy and the `/club/join` framing**       | `/club/about`, `/club/join` |
-| 5   | **A real 1200×630 OG share card** — currently the 512×512 app icon | every link preview          |
+| #   | Item                                                               | Blocks                 |
+| --- | ------------------------------------------------------------------ | ---------------------- |
+| 1   | **ADV-T credit wording and relationship**                          | `/club` (partners row) |
+| 2   | **2024 SoC Design Challenge track, placement, team**               | `/club#about`          |
+| 3   | **Static map screenshot** of Universitetskaya 1                    | `/club#contact`        |
+| 4   | 🟡 **Approve the mission copy and the `/club#join` framing**       | `/club#about`, `#join` |
+| 5   | **A real 1200×630 OG share card** — currently the 512×512 app icon | every link preview     |
 
 Not blocking, worth deciding eventually: a `club@…` role email instead of a personal address.

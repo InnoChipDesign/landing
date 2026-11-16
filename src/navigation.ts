@@ -11,9 +11,11 @@ import { site } from '~/data/site';
  */
 export const clubHeaderData = {
   links: [
-    { text: 'About', href: getPermalink('/club/about') },
-    { text: 'Join', href: getPermalink('/club/join') },
-    { text: 'Contact', href: getPermalink('/club/contact') },
+    { text: 'What we do', href: getPermalink('/club') + '#what-we-do' },
+    { text: 'About', href: getPermalink('/club') + '#about' },
+    { text: 'Join', href: getPermalink('/club') + '#join' },
+    { text: 'FAQ', href: getPermalink('/club') + '#faq' },
+    { text: 'Contact', href: getPermalink('/club') + '#contact' },
   ],
 };
 
@@ -22,9 +24,11 @@ export const clubFooterData = {
     {
       title: 'Club',
       links: [
-        { text: 'About', href: getPermalink('/club/about') },
-        { text: 'Join', href: getPermalink('/club/join') },
-        { text: 'Contact', href: getPermalink('/club/contact') },
+        { text: 'What we do', href: getPermalink('/club') + '#what-we-do' },
+        { text: 'About', href: getPermalink('/club') + '#about' },
+        { text: 'Join', href: getPermalink('/club') + '#join' },
+        { text: 'FAQ', href: getPermalink('/club') + '#faq' },
+        { text: 'Contact', href: getPermalink('/club') + '#contact' },
       ],
     },
     {
