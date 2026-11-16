@@ -1,0 +1,8 @@
+---
+import ServiceUnderConstruction from '~/components/ServiceUnderConstruction.astro';
+import { services } from '~/data/services';
+
+const service = services.find((s) => s.id === 'vcd')!;
+---
+
+<ServiceUnderConstruction service={service} />
