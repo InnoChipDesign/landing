@@ -79,11 +79,11 @@ Defined in `src/data/services.ts`, which drives the portal tiles at `/`. The clu
 service buttons: from under `/club` the other properties are reached through the portal link beside
 the wordmark.
 
-| id     | Name                          | Tagline                                                 | URL                                                           |
-| ------ | ----------------------------- | ------------------------------------------------------- | ------------------------------------------------------------- |
-| `club` | The Club                      | Projects, events and how to join.                       | `/club`                                                       |
-| `vcd`  | Visual Circuit Designer (VCD) | Design, simulate and compile circuits, interactively.   | `https://innochipdesign.campus.innopolis.university/vcd`      |
-| `hw`   | Homework (HW)                 | Verilog practice with submission and automatic grading. | `https://innochipdesign.campus.innopolis.university/homework` |
+| id     | Name                          | Tagline                                                 | URL         |
+| ------ | ----------------------------- | ------------------------------------------------------- | ----------- |
+| `club` | The Club                      | Projects, events and how to join.                       | `/club`     |
+| `vcd`  | Visual Circuit Designer (VCD) | Design, simulate and compile circuits, interactively.   | `/vcd`      |
+| `hw`   | Homework (HW)                 | Verilog practice with submission and automatic grading. | `/homework` |
 
 ---
 
